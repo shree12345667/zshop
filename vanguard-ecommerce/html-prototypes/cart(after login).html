@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart | Vanguard Premium Essentials</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#F26522',
+                            light: '#F8F9FA',
+                            dark: '#0F172A',
+                            gray: '#8E98A8'
+                        }
+                    },
+                    transitionTimingFunction: {
+                        'smooth': 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #F8F9FA; 
+            -webkit-font-smoothing: antialiased; 
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.8); }
+
+        /* True Flat Glass Utility (Absolutely No Shadows) */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* Highly Optimized Video Background */
+        .video-bg-container { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; pointer-events: none; background-color: #f1f5f9;
+        }
+        .video-bg-container video { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: 0; object-fit: cover; 
+        }
+        .video-overlay { 
+            position: absolute; inset: 0; z-index: 1; background: rgba(255, 255, 255, 0.35); 
+        }
+
+        /* Flat Inputs */
+        .flat-input {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .flat-input:hover { background: rgba(255, 255, 255, 0.65); border-color: #ffffff; }
+        .flat-input:focus { background: rgba(255, 255, 255, 0.8); border-color: rgba(15, 23, 42, 0.4); outline: none; }
+
+        /* Smooth Progress Bar */
+        .progress-bar-fill {
+            transition: width 1s cubic-bezier(0.25, 0.1, 0.25, 1), background-color 0.5s ease;
+        }
+    </style>
+</head>
+<body class="text-brand-dark min-h-screen flex flex-col relative">
+
+    <!-- Responsive Video Background -->
+    <div class="video-bg-container">
+        <video autoplay muted loop playsinline preload="auto" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260511_131941_d136af49-e243-493a-be14-6ff3f24e09e6.mp4"></video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- ==========================================
+         NAVIGATION (Logged In State)
+    =========================================== -->
+    <nav class="fixed top-0 inset-x-0 z-40 pt-4 px-4 sm:pt-6 sm:px-6 flex justify-center transition-all duration-300">
+        <div class="glass-panel rounded-full p-2.5 flex items-center justify-between w-full max-w-[1600px]">
+            <!-- Left: Logo & Links -->
+            <div class="flex items-center gap-8 pl-4">
+                <a href="index.html" class="text-[16px] font-semibold tracking-tight uppercase hover:opacity-70 transition-opacity">Vanguard.</a>
+                <div class="hidden md:flex items-center gap-7">
+                    <a href="shop(after login).html" class="text-[13px] font-medium text-gray-800 hover:text-black hover:-translate-y-0.5 transition-all duration-300">Shop All</a>
+                    <a href="shop(after login).html?category=mens" class="text-[13px] font-medium text-gray-800 hover:text-black hover:-translate-y-0.5 transition-all duration-300">Mens</a>
+                </div>
+            </div>
+
+            <!-- Right: User Profile & Cart -->
+            <div class="hidden md:flex items-center gap-2">
+                <button onclick="window.location.href='account.html'" class="flex items-center gap-2 bg-white/40 hover:bg-white/60 rounded-full pl-2 pr-4 py-1.5 transition-colors border border-white hover:scale-[1.02] active:scale-95">
+                    <div class="user-initials w-7 h-7 rounded-full bg-brand-orange text-white flex items-center justify-center text-[11px] font-bold">JD</div>
+                    <span class="user-full-name text-[13px] font-medium text-gray-900">Loading...</span>
+                </button>
+
+                <button class="flex items-center bg-brand-dark text-white rounded-full pl-5 pr-1.5 py-1.5 ml-2 border border-brand-dark cursor-default">
+                    <span id="nav-cart-badge" class="text-[13px] font-medium mr-3">Cart (0)</span>
+                    <div class="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="flex md:hidden items-center gap-2 pr-1">
+                <button onclick="window.location.href='account.html'" class="user-initials w-8 h-8 rounded-full bg-brand-orange text-white flex items-center justify-center text-[12px] font-bold border border-white">JD</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==========================================
+         CART HEADER
+    =========================================== -->
+    <header class="pt-32 sm:pt-40 pb-8 px-5 sm:px-8 lg:px-12 max-w-[1600px] mx-auto w-full relative z-10">
+        <nav class="glass-panel inline-flex px-4 py-2 rounded-full text-[12px] text-gray-800 mb-6 font-bold border-white/60">
+            <a href="index.html" class="hover:text-black transition-colors">Home</a>
+            <span class="mx-2 text-gray-400">/</span>
+            <a href="shop(after login).html" class="hover:text-black transition-colors">Shop</a>
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-black font-bold">Cart</span>
+        </nav>
+
+        <div class="glass-panel px-6 py-4 sm:px-8 sm:py-5 rounded-2xl border-white/60 w-fit">
+            <h1 class="text-[28px] sm:text-[36px] font-bold tracking-tight text-brand-dark mb-1 leading-none">Your Cart</h1>
+            <p id="cart-header-count" class="text-[14px] text-gray-800 font-semibold">You have 0 items in your cart.</p>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         CART MAIN LAYOUT
+    =========================================== -->
+    <main class="flex-1 px-5 sm:px-8 lg:px-12 max-w-[1600px] mx-auto w-full pb-32 relative z-10">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+            
+            <!-- LEFT COLUMN: DYNAMIC CART ITEMS -->
+            <div class="lg:col-span-8 flex flex-col gap-6">
+                
+                <!-- Free Shipping Progress Bar (Dynamic) -->
+                <div class="glass-panel p-6 rounded-3xl border-white/60">
+                    <div class="flex justify-between items-end mb-3">
+                        <h3 id="shipping-status-msg" class="text-[14px] font-bold text-gray-900">Add $200 more for Free Premium Shipping!</h3>
+                        <span id="shipping-status-pct" class="text-[13px] font-bold text-brand-orange">0%</span>
+                    </div>
+                    <div class="w-full bg-white/40 rounded-full h-2 overflow-hidden border border-white/50 relative">
+                        <div id="shipping-progress-bar" class="bg-brand-orange h-full rounded-full progress-bar-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC ITEMS INJECTED HERE -->
+                <div id="main-cart-container" class="flex flex-col gap-6">
+                    <!-- Items will be mapped here by JavaScript -->
+                </div>
+
+                <div id="empty-cart-message" class="glass-panel p-12 rounded-3xl border-white/60 text-center hidden">
+                    <h3 class="text-[20px] font-bold text-gray-900 mb-2">Your cart is empty.</h3>
+                    <p class="text-[14px] text-gray-700 mb-6 font-medium">Looks like you haven't added any essentials yet.</p>
+                    <button onclick="window.location.href='shop(after login).html'" class="bg-brand-dark text-white text-[14px] font-bold py-3 px-8 rounded-xl hover:bg-black hover:scale-[1.02] active:scale-95 transition-all duration-300">
+                        Continue Shopping
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: ORDER SUMMARY (Dynamic) -->
+            <div class="lg:col-span-4 relative">
+                <div class="glass-panel p-6 sm:p-8 rounded-3xl border-white/60 sticky top-32">
+                    <h2 class="text-[20px] font-bold tracking-tight text-gray-900 mb-6">Order Summary</h2>
+                    
+                    <!-- Promo Code -->
+                    <div class="mb-6">
+                        <label class="block text-[12px] font-bold text-gray-700 mb-2 uppercase tracking-wider">Gift Card or Promo Code</label>
+                        <div class="flex items-center w-full gap-2">
+                            <input type="text" id="promo-input" placeholder="Enter code" class="w-full min-w-0 flex-1 flat-input rounded-xl px-4 py-3 text-[13px] font-medium outline-none uppercase placeholder-gray-500">
+                            <button id="apply-promo-btn" class="shrink-0 bg-white/60 hover:bg-white text-gray-900 border border-white px-5 py-3 rounded-xl text-[13px] font-bold transition-colors hover:scale-[1.02] active:scale-95">Apply</button>
+                        </div>
+                    </div>
+
+                    <div class="h-px bg-white/50 my-6 w-full"></div>
+
+                    <!-- Line Items -->
+                    <div class="space-y-4 mb-6">
+                        <div class="flex justify-between text-[14px]">
+                            <span id="summary-subtotal-label" class="text-gray-800 font-semibold">Subtotal</span>
+                            <span id="summary-subtotal-val" class="text-gray-900 font-bold">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-[14px] hidden" id="summary-discount-row">
+                            <span class="text-gray-800 font-semibold">Discount (<span id="active-promo"></span>)</span>
+                            <span id="summary-discount-val" class="text-brand-orange font-bold">-$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-[14px]">
+                            <span class="text-gray-800 font-semibold">Shipping</span>
+                            <span id="summary-shipping-val" class="text-gray-900 font-bold">$15.00</span>
+                        </div>
+                        <div class="flex justify-between text-[14px]">
+                            <span class="text-gray-800 font-semibold">Estimated Tax (8%)</span>
+                            <span id="summary-tax-val" class="text-gray-900 font-bold">$0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="h-px bg-white/50 my-6 w-full"></div>
+
+                    <!-- Total -->
+                    <div class="flex justify-between items-end mb-8">
+                        <span class="text-[16px] font-bold text-gray-900">Total</span>
+                        <div class="text-right">
+                            <span id="summary-total-val" class="block text-[28px] font-bold text-brand-dark leading-none">$0.00</span>
+                            <span class="block text-[11px] font-bold text-gray-600 mt-1 uppercase">USD</span>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Actions -->
+                    <button id="checkout-btn" onclick="window.location.href='checkout(after login).html'" class="w-full bg-brand-dark text-white text-[15px] font-bold py-4 rounded-xl hover:bg-black hover:scale-[1.02] active:scale-95 transition-all duration-300 mb-4 flex justify-center items-center gap-2 border border-transparent">
+                        Proceed to Checkout
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </button>
+                    
+                    <p class="text-center text-[12px] font-semibold text-gray-600">
+                        Secure checkout. 30-day free returns.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ==========================================
+         JAVASCRIPT: FULLY RESPONSIVE CART ENGINE
+    =========================================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. Fetch Logged-in User Data ---
+            async function fetchUserData() {
+                const token = localStorage.getItem('vanguard_token');
+                
+                // If there's no token in storage, redirect back to login
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const user = data.user;
+                        
+                        document.querySelectorAll('.user-full-name').forEach(el => el.textContent = user.fullName);
+                        const names = user.fullName.trim().split(' ');
+                        const initials = names.length > 1 ? (names[0][0] + names[names.length - 1][0]) : names[0][0];
+                        document.querySelectorAll('.user-initials').forEach(el => el.textContent = initials.toUpperCase());
+                        
+                    } else {
+                        localStorage.removeItem('vanguard_token');
+                        window.location.href = 'login.html';
+                    }
+                } catch (error) {
+                    console.error("Server connection failed:", error);
+                }
+            }
+            fetchUserData();
+
+            // --- 2. Centralized Cart State (READS FROM LOCAL STORAGE) ---
+            let cartData = JSON.parse(localStorage.getItem('vanguard_cart')) || [];
+
+            let discountMultiplier = 0;
+            const FREE_SHIPPING_THRESHOLD = 200;
+            const TAX_RATE = 0.08; 
+
+            // DOM Elements
+            const cartContainer = document.getElementById('main-cart-container');
+            const emptyMessage = document.getElementById('empty-cart-message');
+            const cartHeaderCount = document.getElementById('cart-header-count');
+            const navCartBadge = document.getElementById('nav-cart-badge');
+            
+            const subtotalLabel = document.getElementById('summary-subtotal-label');
+            const subtotalVal = document.getElementById('summary-subtotal-val');
+            const discountRow = document.getElementById('summary-discount-row');
+            const discountVal = document.getElementById('summary-discount-val');
+            const activePromo = document.getElementById('active-promo');
+            const shippingVal = document.getElementById('summary-shipping-val');
+            const taxVal = document.getElementById('summary-tax-val');
+            const totalVal = document.getElementById('summary-total-val');
+            
+            const shippingMsg = document.getElementById('shipping-status-msg');
+            const shippingPct = document.getElementById('shipping-status-pct');
+            const progressBar = document.getElementById('shipping-progress-bar');
+            
+            const checkoutBtn = document.getElementById('checkout-btn');
+
+            // --- 3. Render Functions ---
+            const renderCart = () => {
+                cartContainer.innerHTML = '';
+                
+                if (cartData.length === 0) {
+                    emptyMessage.classList.remove('hidden');
+                    checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                } else {
+                    emptyMessage.classList.add('hidden');
+                    checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                    
+                    cartData.forEach((item, index) => {
+                        const itemHtml = `
+                            <div class="glass-panel p-4 sm:p-6 rounded-3xl border-white/60 flex flex-col sm:flex-row gap-6 items-start sm:items-center hover:bg-white/40 hover:-translate-y-1 transition-all duration-400 group">
+                                <div class="w-full sm:w-32 h-32 shrink-0 rounded-2xl overflow-hidden bg-white/40 border border-white cursor-pointer">
+                                    <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500">
+                                </div>
+                                <div class="flex-1 w-full">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h3 class="text-[16px] font-bold text-gray-900">${item.name}</h3>
+                                        <button onclick="removeItem(${index})" class="text-gray-500 hover:text-red-500 hover:scale-110 transition-all p-1" title="Remove Item">
+                                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                        </button>
+                                    </div>
+                                    <p class="text-[13px] font-semibold text-gray-700 mb-4">Standard Delivery</p>
+                                    
+                                    <div class="flex items-center justify-between mt-auto">
+                                        <div class="flex items-center bg-white/50 border border-white rounded-xl overflow-hidden shadow-sm">
+                                            <button onclick="updateQty(${index}, -1)" class="w-10 h-10 flex items-center justify-center text-gray-800 hover:bg-white/80 hover:text-black transition-colors font-bold text-lg">-</button>
+                                            <span class="w-10 text-center text-[13px] font-bold text-gray-900">${item.quantity}</span>
+                                            <button onclick="updateQty(${index}, 1)" class="w-10 h-10 flex items-center justify-center text-gray-800 hover:bg-white/80 hover:text-black transition-colors font-bold text-lg">+</button>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="block text-[16px] font-bold text-gray-900">$${(item.price * item.quantity).toFixed(2)}</span>
+                                            ${item.quantity > 1 ? `<span class="block text-[12px] font-semibold text-gray-600 mt-0.5">$${item.price.toFixed(2)} each</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        cartContainer.insertAdjacentHTML('beforeend', itemHtml);
+                    });
+                }
+                
+                calculateTotals();
+            };
+
+            const calculateTotals = () => {
+                let subtotal = 0;
+                let totalItems = 0;
+
+                cartData.forEach(item => {
+                    subtotal += (item.price * item.quantity);
+                    totalItems += item.quantity;
+                });
+
+                cartHeaderCount.textContent = `You have ${totalItems} item${totalItems !== 1 ? 's' : ''} in your cart.`;
+                if(navCartBadge) navCartBadge.textContent = `Cart (${totalItems})`;
+                subtotalLabel.textContent = `Subtotal (${totalItems} item${totalItems !== 1 ? 's' : ''})`;
+                subtotalVal.textContent = `$${subtotal.toFixed(2)}`;
+
+                let progressPct = (subtotal / FREE_SHIPPING_THRESHOLD) * 100;
+                if (progressPct >= 100) {
+                    progressPct = 100;
+                    shippingMsg.textContent = "You qualify for Free Premium Shipping!";
+                    shippingPct.textContent = "100%";
+                    shippingVal.textContent = "Free";
+                    shippingVal.className = "text-green-700 font-bold";
+                    progressBar.style.backgroundColor = "#F26522"; // Brand Orange
+                } else {
+                    const remaining = (FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2);
+                    shippingMsg.textContent = `Add $${remaining} more for Free Shipping!`;
+                    shippingPct.textContent = `${Math.floor(progressPct)}%`;
+                    shippingVal.textContent = "$15.00";
+                    shippingVal.className = "text-gray-900 font-bold";
+                    progressBar.style.backgroundColor = "#0F172A"; // Brand Dark
+                }
+                progressBar.style.width = `${progressPct}%`;
+
+                const shippingCost = progressPct >= 100 || subtotal === 0 ? 0 : 15;
+                const discountAmount = subtotal * discountMultiplier;
+                
+                if (discountAmount > 0) {
+                    discountRow.classList.remove('hidden');
+                    discountVal.textContent = `-$${discountAmount.toFixed(2)}`;
+                } else {
+                    discountRow.classList.add('hidden');
+                }
+
+                const discountedSubtotal = subtotal - discountAmount;
+                const taxAmount = discountedSubtotal * TAX_RATE;
+                taxVal.textContent = `$${taxAmount.toFixed(2)}`;
+
+                const grandTotal = discountedSubtotal + shippingCost + taxAmount;
+                totalVal.textContent = `$${grandTotal.toFixed(2)}`;
+            };
+
+            // --- 4. Modifying the Cart ---
+            window.updateQty = (index, delta) => {
+                const newQty = cartData[index].quantity + delta;
+                if (newQty <= 0) {
+                    removeItem(index);
+                } else {
+                    cartData[index].quantity = newQty;
+                    // SAVE CHANGES TO LOCAL STORAGE
+                    localStorage.setItem('vanguard_cart', JSON.stringify(cartData));
+                    renderCart();
+                }
+            };
+
+            window.removeItem = (index) => {
+                cartData.splice(index, 1); 
+                // SAVE CHANGES TO LOCAL STORAGE
+                localStorage.setItem('vanguard_cart', JSON.stringify(cartData));
+                renderCart(); 
+            };
+
+            // --- 5. Promo Code ---
+            const validPromos = { 'VANGUARD20': 0.20, 'SPRING15': 0.15 };
+            document.getElementById('apply-promo-btn')?.addEventListener('click', () => {
+                const inputEl = document.getElementById('promo-input');
+                const code = inputEl.value.trim().toUpperCase();
+                
+                if (validPromos[code]) {
+                    discountMultiplier = validPromos[code];
+                    activePromo.textContent = code;
+                    inputEl.value = '';
+                    renderCart();
+                } else if (code === '') {
+                    // Do nothing
+                } else {
+                    alert('Invalid or expired promo code.');
+                    discountMultiplier = 0;
+                    renderCart();
+                }
+            });
+
+            // Initial Render of Cart
+            renderCart();
+        });
+    </script>
+</body>
+</html>

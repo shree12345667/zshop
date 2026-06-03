@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zshop | Premium E-Commerce</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: '#F26522',
+                        dark: '#111111'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Smooth Scroll */
+        html { scroll-behavior: smooth; }
+        
+        /* Text Roll Animation for Buttons */
+        .text-roll-container {
+            height: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .text-roll-inner {
+            transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .group:hover .text-roll-inner {
+            transform: translateY(-50%);
+        }
+
+        /* Hover Reveal Button in Product Cards */
+        .hover-reveal-btn {
+            width: 36px;
+            transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .group:hover .hover-reveal-btn {
+            width: 140px;
+        }
+        .hover-reveal-text {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            transition-delay: 0s;
+        }
+        .group:hover .hover-reveal-text {
+            opacity: 1;
+            transition-delay: 0.15s;
+        }
+
+        /* Mobile Menu Sheet Transition */
+        #mobile-menu {
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+    </style>
+</head>
+<body class="antialiased bg-[#EFEFEF] text-gray-900 overflow-x-hidden">
+
+    <!-- SECTION 1: HERO -->
+    <section class="relative h-screen w-full flex flex-col">
+        
+        <!-- Video Background -->
+        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0">
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260403_050628_c4e32401-fab4-4a27-b7a8-6e9291cd5959.mp4" type="video/mp4">
+        </video>
+        <!-- Overlay to ensure text readability -->
+        <div class="absolute inset-0 bg-black/40 z-10 pointer-events-none"></div>
+
+        <!-- Navigation (z-20) -->
+        <nav class="relative z-20 w-full max-w-[1440px] mx-auto p-2 sm:p-3 pt-4 sm:pt-6">
+            <div class="bg-white/95 backdrop-blur-md rounded-full p-[5px] flex items-center justify-between shadow-sm">
+                
+                <!-- Left: Logo & Links -->
+                <div class="flex items-center gap-6 pl-2">
+                    <a href="#" class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full overflow-hidden shrink-0">
+                        <!-- Custom Zshop Logo -->
+                        <img src="https://res.cloudinary.com/ds93qby5a/image/upload/v1780223632/Screenshot_2026-05-31_152011-Photoroom_1_s9tty1.png" alt="Zshop Logo" class="w-full h-full object-cover">
+                    </a>
+                    
+                    <div class="hidden md:flex items-center gap-6 text-[14px] font-medium text-gray-900">
+                        <a href="#products" class="hover:text-gray-500 transition-colors duration-300">Products</a>
+                        <a href="#about" class="hover:text-gray-500 transition-colors duration-300">About</a>
+                        <a href="#journal" class="hover:text-gray-500 transition-colors duration-300">Journal</a>
+                    </div>
+                </div>
+
+                <!-- Right: Desktop Actions & Time -->
+                <div class="hidden md:flex items-center gap-5 pr-1">
+                    <span class="text-[13px] text-gray-500 hidden lg:block tracking-wide">Premium Curated Goods</span>
+                    
+                    <div class="flex items-center gap-1.5 text-[13px] text-gray-600 border-l border-gray-200 pl-5">
+                        <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                        <span id="london-time">--:-- in London</span>
+                    </div>
+
+                    <!-- Customer Link -->
+                    <a href="shop.html" class="ml-2 bg-gray-900 text-white text-[13px] font-medium rounded-full pl-5 pr-2 py-2 flex items-center gap-3 group hover:bg-gray-800 transition-colors">
+                        <div class="text-roll-container">
+                            <div class="text-roll-inner">
+                                <span class="block h-[20px] leading-[20px]">Customer Login</span>
+                                <span class="block h-[20px] leading-[20px]">Customer Login</span>
+                            </div>
+                        </div>
+                        <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-gray-900 group-hover:-rotate-45 transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </a>
+                    
+                    <!-- Admin Link -->
+                    <a href="Admin.html" class="bg-brand text-white text-[13px] font-medium rounded-full pl-5 pr-2 py-2 flex items-center gap-3 group hover:bg-[#e05a1a] transition-colors">
+                        <div class="text-roll-container">
+                            <div class="text-roll-inner">
+                                <span class="block h-[20px] leading-[20px]">Admin</span>
+                                <span class="block h-[20px] leading-[20px]">Admin</span>
+                            </div>
+                        </div>
+                        <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-brand group-hover:-rotate-45 transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="menu-btn" class="md:hidden w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center mr-1">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Hero Content (z-20) -->
+        <div class="relative z-20 flex-1 flex flex-col justify-end w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20 text-white">
+            <p class="text-[13px] sm:text-[14px] tracking-wide mb-4 sm:mb-6 font-medium text-white/90">ZSHOP OFFICIAL</p>
+            
+            <h1 class="text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.08] tracking-[-0.03em] max-w-5xl">
+                We curate premium goods <br class="hidden sm:block"> for modern lifestyles ready to <br class="hidden sm:block"> elevate your everyday routine.
+            </h1>
+            
+            <div class="mt-8 sm:mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+                <!-- Shop as Customer CTA -->
+                <a href="shop.html" class="bg-brand hover:bg-[#e05a1a] text-white text-[13px] sm:text-[14px] font-medium rounded-full pl-5 sm:pl-6 pr-2 py-2 flex items-center gap-4 group transition-colors">
+                    <div class="text-roll-container">
+                        <div class="text-roll-inner">
+                            <span class="block h-[20px] leading-[20px]">Shop as Customer</span>
+                            <span class="block h-[20px] leading-[20px]">Shop as Customer</span>
+                        </div>
+                    </div>
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center text-brand group-hover:-rotate-45 transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </div>
+                </a>
+                
+                <!-- Admin Gateway CTA -->
+                <a href="Admin.html" class="bg-white hover:bg-gray-100 text-gray-900 text-[13px] sm:text-[14px] font-medium rounded-full pl-5 sm:pl-6 pr-2 py-2 flex items-center gap-4 group transition-colors">
+                    <div class="text-roll-container">
+                        <div class="text-roll-inner">
+                            <span class="block h-[20px] leading-[20px]">Admin Gateway</span>
+                            <span class="block h-[20px] leading-[20px]">Admin Gateway</span>
+                        </div>
+                    </div>
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 bg-gray-900 rounded-full flex items-center justify-center text-white group-hover:-rotate-45 transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/60 z-40 hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="mobile-menu" class="fixed inset-x-0 bottom-0 z-50 transform translate-y-full mx-3 mb-3 bg-white rounded-2xl p-6 flex flex-col gap-6">
+        <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+            <span class="text-[13px] text-gray-500 font-medium">Menu</span>
+            <button id="close-menu-btn" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+        <div class="flex flex-col gap-4 text-[28px] font-medium text-gray-900">
+            <a href="shop.html" class="hover:text-brand transition-colors">Shop (Customer)</a>
+            <a href="Admin.html" class="hover:text-brand transition-colors">Admin Portal</a>
+            <a href="#products" class="hover:text-brand transition-colors">Our Products</a>
+            <a href="#about" class="hover:text-brand transition-colors">About Zshop</a>
+        </div>
+        <div class="pt-4 flex items-center gap-2 text-[13px] text-gray-500">
+            <i data-lucide="clock" class="w-4 h-4"></i>
+            <span id="london-time-mobile">--:-- in London</span>
+        </div>
+    </div>
+
+    <!-- SECTION 2: ABOUT -->
+    <section id="about" class="bg-white pt-16 sm:pt-20 lg:pt-32 pb-12 sm:pb-16 lg:pb-24 overflow-hidden">
+        <div class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
+            
+            <!-- Badge Row -->
+            <div class="flex items-center gap-3 mb-6 sm:mb-8">
+                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-900 text-white flex items-center justify-center text-[11px] sm:text-[12px] font-semibold">1</div>
+                <div class="text-[12px] sm:text-[13px] font-medium border border-gray-200 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-gray-900">
+                    Introducing Zshop
+                </div>
+            </div>
+
+            <!-- Heading -->
+            <h2 class="text-[clamp(1.5rem,4vw,3.2rem)] font-medium leading-[1.12] tracking-[-0.02em] text-gray-900 mb-12 sm:mb-16 lg:mb-28 max-w-4xl">
+                Premium-led collections, delivering <br class="hidden md:block"> excellence in everyday essentials.
+            </h2>
+
+            <!-- Content Area: Mobile/Tablet vs Desktop -->
+            <!-- Mobile/Tablet Layout (Stacked) -->
+            <div class="lg:hidden flex flex-col gap-8">
+                <div>
+                    <p class="text-[15px] sm:text-[17px] leading-[1.6] font-medium text-gray-900 mb-6">
+                        Through meticulous curation and uncompromised quality, we help individuals realize their lifestyle's full potential.
+                    </p>
+                    <a href="shop.html" class="bg-brand hover:bg-[#e05a1a] text-white text-[13px] font-medium rounded-full pl-5 pr-2 py-2 inline-flex items-center gap-4 group transition-colors">
+                        <div class="text-roll-container">
+                            <div class="text-roll-inner">
+                                <span class="block h-[20px] leading-[20px]">Explore collections</span>
+                                <span class="block h-[20px] leading-[20px]">Explore collections</span>
+                            </div>
+                        </div>
+                        <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center text-brand group-hover:-rotate-45 transition-transform duration-500">
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </a>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 sm:gap-5">
+                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800&auto=format&fit=crop" alt="Fashion collection" class="w-full sm:w-[45%] aspect-[438/346] object-cover rounded-xl sm:rounded-2xl">
+                    <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1200&auto=format&fit=crop" alt="Premium sneakers" class="w-full sm:w-[55%] aspect-[900/600] object-cover rounded-xl sm:rounded-2xl">
+                </div>
+            </div>
+
+            <!-- Desktop Layout (Grid) -->
+            <div class="hidden lg:grid grid-cols-[26%_1fr_48%] items-end gap-6 xl:gap-8">
+                <!-- Left: Small Image -->
+                <div class="self-end">
+                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800&auto=format&fit=crop" alt="Fashion aesthetics" class="w-full aspect-[438/346] object-cover rounded-2xl shadow-sm">
+                </div>
+                
+                <!-- Center: Text & Button -->
+                <div class="self-start flex flex-col justify-end h-full pt-10">
+                    <p class="text-[16px] xl:text-[18px] leading-[1.65] font-medium text-gray-900 mb-8 whitespace-nowrap">
+                        Through meticulous curation,<br>
+                        uncompromised quality and <br>
+                        premium selection, we help<br>
+                        elevate everyday living.
+                    </p>
+                    <a href="shop.html" class="bg-brand hover:bg-[#e05a1a] text-white text-[13px] font-medium rounded-full pl-5 pr-2 py-2 inline-flex items-center gap-4 group transition-colors w-max">
+                        <div class="text-roll-container">
+                            <div class="text-roll-inner">
+                                <span class="block h-[20px] leading-[20px]">Explore collections</span>
+                                <span class="block h-[20px] leading-[20px]">Explore collections</span>
+                            </div>
+                        </div>
+                        <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center text-brand group-hover:-rotate-45 transition-transform duration-500">
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Right: Large Image -->
+                <div class="self-end">
+                    <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1280&auto=format&fit=crop" alt="Lifestyle premium products" class="w-full aspect-[3/2] object-cover rounded-2xl shadow-sm">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: PRODUCTS -->
+    <section id="products" class="bg-[#F5F5F5] pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28">
+        <div class="max-w-[1440px] mx-auto">
+            
+            <!-- Badge Row -->
+            <div class="px-5 sm:px-8 lg:px-12 flex items-center gap-3 mb-6 sm:mb-8">
+                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-900 text-white flex items-center justify-center text-[11px] sm:text-[12px] font-semibold">2</div>
+                <div class="text-[12px] sm:text-[13px] font-medium border border-gray-300 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-gray-900">
+                    Featured Products
+                </div>
+            </div>
+
+            <!-- Heading -->
+            <h2 class="px-5 sm:px-8 lg:px-12 text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 mb-10 sm:mb-14 lg:mb-16">
+                Our Products
+            </h2>
+
+            <!-- Products Grid -->
+            <div class="px-5 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 lg:gap-7">
+                
+                <!-- Product 1 -->
+                <div class="group cursor-pointer">
+                    <div class="relative w-full aspect-[329/246] sm:aspect-square md:aspect-[329/246] lg:aspect-[4/3] rounded-2xl overflow-hidden bg-[#e0e0e0]">
+                        <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=1000&auto=format&fit=crop" alt="Premium Leather Bag" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
+                        
+                        <!-- Hover Action Button -->
+                        <div class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6">
+                            <a href="shop.html" class="hover-reveal-btn h-9 sm:h-11 bg-white rounded-full flex items-center pl-1 shadow-lg">
+                                <div class="w-7 h-7 sm:w-9 sm:h-9 bg-gray-900 rounded-full flex items-center justify-center text-white shrink-0">
+                                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+                                </div>
+                                <span class="hover-reveal-text text-[12px] sm:text-[13px] font-medium text-gray-900 pl-3 pr-4">Add to Cart</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-[15px] sm:text-[16px] font-semibold text-gray-900">Heritage Leather Tote</h3>
+                            <p class="text-[13px] sm:text-[14px] text-gray-500 mt-1">Full-grain italian leather, handcrafted.</p>
+                        </div>
+                        <span class="text-[14px] font-semibold text-gray-900">$245.00</span>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="group cursor-pointer">
+                    <div class="relative w-full aspect-[329/246] sm:aspect-square md:aspect-[329/246] lg:aspect-[4/3] rounded-2xl overflow-hidden bg-[#e0e0e0]">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop" alt="Smart Watch" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
+                        
+                        <!-- Hover Action Button -->
+                        <div class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6">
+                            <a href="shop.html" class="hover-reveal-btn h-9 sm:h-11 bg-gray-900 rounded-full flex items-center pl-1 shadow-lg">
+                                <div class="w-7 h-7 sm:w-9 sm:h-9 bg-brand rounded-full flex items-center justify-center text-white shrink-0">
+                                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+                                </div>
+                                <span class="hover-reveal-text text-[12px] sm:text-[13px] font-medium text-white pl-3 pr-4">Add to Cart</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-[15px] sm:text-[16px] font-semibold text-gray-900">Zshop Minimalist Watch</h3>
+                            <p class="text-[13px] sm:text-[14px] text-gray-500 mt-1">Matte black finish, sapphire glass.</p>
+                        </div>
+                        <span class="text-[14px] font-semibold text-gray-900">$189.00</span>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="group cursor-pointer">
+                    <div class="relative w-full aspect-[329/246] sm:aspect-square md:aspect-[329/246] lg:aspect-[4/3] rounded-2xl overflow-hidden bg-[#e0e0e0]">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1000&auto=format&fit=crop" alt="Premium Headphones" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
+                        
+                        <!-- Hover Action Button -->
+                        <div class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6">
+                            <a href="shop.html" class="hover-reveal-btn h-9 sm:h-11 bg-white rounded-full flex items-center pl-1 shadow-lg">
+                                <div class="w-7 h-7 sm:w-9 sm:h-9 bg-gray-900 rounded-full flex items-center justify-center text-white shrink-0">
+                                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+                                </div>
+                                <span class="hover-reveal-text text-[12px] sm:text-[13px] font-medium text-gray-900 pl-3 pr-4">Add to Cart</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-[15px] sm:text-[16px] font-semibold text-gray-900">Acoustic Over-Ear Studio</h3>
+                            <p class="text-[13px] sm:text-[14px] text-gray-500 mt-1">Noise-cancelling, 40hr battery life.</p>
+                        </div>
+                        <span class="text-[14px] font-semibold text-gray-900">$299.00</span>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="group cursor-pointer">
+                    <div class="relative w-full aspect-[329/246] sm:aspect-square md:aspect-[329/246] lg:aspect-[4/3] rounded-2xl overflow-hidden bg-[#e0e0e0]">
+                        <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=1000&auto=format&fit=crop" alt="Classic Sunglasses" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
+                        
+                        <!-- Hover Action Button -->
+                        <div class="absolute bottom-4 left-4 sm:bottom-6 sm:left-6">
+                            <a href="shop.html" class="hover-reveal-btn h-9 sm:h-11 bg-gray-900 rounded-full flex items-center pl-1 shadow-lg">
+                                <div class="w-7 h-7 sm:w-9 sm:h-9 bg-brand rounded-full flex items-center justify-center text-white shrink-0">
+                                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+                                </div>
+                                <span class="hover-reveal-text text-[12px] sm:text-[13px] font-medium text-white pl-3 pr-4">Add to Cart</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-[15px] sm:text-[16px] font-semibold text-gray-900">Onyx Aviators</h3>
+                            <p class="text-[13px] sm:text-[14px] text-gray-500 mt-1">Polarized UV400 lenses, titanium frame.</p>
+                        </div>
+                        <span class="text-[14px] font-semibold text-gray-900">$145.00</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Simple -->
+    <footer class="bg-gray-900 text-white py-8 border-t border-gray-800">
+        <div class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <img src="https://res.cloudinary.com/ds93qby5a/image/upload/v1780223632/Screenshot_2026-05-31_152011-Photoroom_1_s9tty1.png" alt="Zshop Logo" class="h-6 object-contain filter invert">
+                <span class="text-[13px] text-gray-400">© 2026 Zshop Inc. All rights reserved.</span>
+            </div>
+            <div class="flex gap-6 text-[13px] text-gray-400">
+                <a href="shop.html" class="hover:text-white transition-colors">Customer Portal</a>
+                <a href="Admin.html" class="hover:text-white transition-colors">Admin Login</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Initialize Scripts -->
+    <script>
+        // 1. Initialize Lucide Icons
+        lucide.createIcons();
+
+        // 2. Live London Clock
+        function updateTime() {
+            const timeOptions = { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false };
+            const formatter = new Intl.DateTimeFormat('en-GB', timeOptions);
+            const timeString = formatter.format(new Date());
+            
+            const desktopClock = document.getElementById('london-time');
+            const mobileClock = document.getElementById('london-time-mobile');
+            
+            if(desktopClock) desktopClock.textContent = `${timeString} in London`;
+            if(mobileClock) mobileClock.textContent = `${timeString} in London`;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // 3. Mobile Menu Toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+
+        function toggleMenu() {
+            const isClosed = mobileMenu.classList.contains('translate-y-full');
+            
+            if (isClosed) {
+                // Open
+                mobileOverlay.classList.remove('hidden');
+                // slight delay to allow display block to apply before opacity transition
+                setTimeout(() => {
+                    mobileOverlay.classList.remove('opacity-0');
+                    mobileMenu.classList.remove('translate-y-full');
+                    mobileMenu.classList.add('translate-y-0');
+                }, 10);
+            } else {
+                // Close
+                mobileMenu.classList.add('translate-y-full');
+                mobileMenu.classList.remove('translate-y-0');
+                mobileOverlay.classList.add('opacity-0');
+                
+                setTimeout(() => {
+                    mobileOverlay.classList.add('hidden');
+                }, 300); // match duration of transition
+            }
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeMenuBtn.addEventListener('click', toggleMenu);
+        mobileOverlay.addEventListener('click', toggleMenu);
+        
+        // Close menu when clicking a link
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+
+    </script>
+</body>
+</html>

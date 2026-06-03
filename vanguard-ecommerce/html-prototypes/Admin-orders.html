@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Orders</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- High-End Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+        }
+        
+        .font-serif-italic {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 300;
+        }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+        
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item { transition: all 0.4s ease; }
+        .nav-item:hover {
+            background: rgba(0, 0, 0, 0.03);
+            border-left: 1px solid rgba(0, 0, 0, 0.3);
+            padding-left: 1.5rem;
+            color: black;
+        }
+        .nav-item.active {
+            background: rgba(0, 0, 0, 0.05);
+            border-left: 1px solid rgba(0, 0, 0, 0.8);
+            padding-left: 1.5rem;
+            color: black;
+        }
+
+        .order-card { transition: all 0.4s ease; }
+        .order-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .status-awaiting { background: #fef08a; color: #854d0e; border: 1px solid #fde047; }
+        .status-paid { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .status-shipped { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    </style>
+</head>
+<body class="text-gray-800 h-screen w-screen overflow-hidden selection:bg-black selection:text-white relative text-xs">
+
+    <!-- Native Video Background -->
+    <video id="bg-video" autoplay loop muted playsinline src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4" class="absolute inset-0 w-full h-full object-cover -z-20"></video>
+    <div class="absolute inset-0 bg-black/10 -z-10"></div>
+
+    <div class="flex h-full w-full p-2 md:p-4 gap-4 relative z-10">
+        
+        <!-- Sidebar -->
+        <aside class="w-16 md:w-56 glass-panel flex flex-col transition-all duration-500 z-20">
+            <div class="h-24 flex items-center justify-center border-b border-black/5">
+                <span class="font-serif-italic text-2xl tracking-[0.1em] text-black hidden md:block">Admin</span>
+                <span class="font-serif-italic text-2xl tracking-widest text-black block md:hidden">A</span>
+            </div>
+            
+            <nav class="flex-1 py-8 flex flex-col gap-1 overflow-y-auto">
+                <a href="Admin-dashboard.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-chart-line w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Dashboard</span>
+                </a>
+                <a href="Admin-products.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-gem w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Products</span>
+                </a>
+                <a href="Admin-orders.html" class="nav-item active w-full flex items-center py-3 px-4 text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-box w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Orders</span>
+                </a>
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-users w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Customers</span>
+                </a>
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-chart-pie w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Analytics</span>
+                </a>
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-tag w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Discounts</span>
+                </a>
+            </nav>
+
+            <div class="border-t border-black/5 p-4">
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-sliders w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Settings</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 glass-panel overflow-y-auto relative p-8 md:p-12">
+            
+            <header class="mb-10 border-b border-black/5 pb-6 flex justify-between items-end">
+                <div>
+                    <p class="text-[9px] uppercase tracking-[0.3em] text-gray-500 mb-2">Transaction Management</p>
+                    <h1 class="font-serif-italic text-3xl md:text-4xl text-black tracking-[0.1em]">Orders</h1>
+                </div>
+                <div class="flex gap-4">
+                    <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-600 bg-white/20 px-4 py-2 rounded-lg border border-white/50">
+                        Total Orders: <span id="total-orders-count" class="text-black">0</span>
+                    </span>
+                </div>
+            </header>
+
+            <!-- Filters -->
+            <div class="flex gap-2 mb-8 border-b border-black/5 pb-4">
+                <button class="px-4 py-2 text-[10px] uppercase tracking-widest font-bold text-black border-b-2 border-black">All Orders</button>
+                <button class="px-4 py-2 text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-black transition-colors">Awaiting Payment</button>
+                <button class="px-4 py-2 text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-black transition-colors">Paid & Processing</button>
+            </div>
+            
+            <!-- Orders Container -->
+            <div id="admin-orders-container" class="space-y-6 pb-20">
+                <!-- Data populated by JS -->
+            </div>
+            
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const API_URL = 'http://127.0.0.1:5000/api/orders';
+
+            function getStatusBadgeClass(status) {
+                if(status === "AWAITING PAYMENT") return "status-awaiting";
+                if(status === "PAID & PROCESSING") return "status-paid";
+                if(status === "SHIPPED") return "status-shipped";
+                if(status === "CANCELLED") return "status-cancelled";
+                return "status-awaiting"; // Default
+            }
+
+            async function renderOrders() {
+                const container = document.getElementById('admin-orders-container');
+                container.innerHTML = `
+                    <div class="text-center py-10">
+                        <p class="text-[10px] uppercase tracking-widest text-gray-500">Fetching live orders...</p>
+                    </div>
+                `;
+
+                let globalOrders = [];
+
+                try {
+                    // Try to connect to Python Backend first
+                    const response = await fetch(API_URL, { mode: 'cors' });
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
+                    
+                    globalOrders = data.orders || [];
+                    
+                    // Sync backend data to localStorage to keep backups aligned
+                    localStorage.setItem('zshop_global_orders', JSON.stringify(globalOrders));
+
+                } catch (error) {
+                    console.warn("Backend connection failed. Pulling from localStorage fallback.", error);
+                    // DUAL-SYNC FALLBACK: If Python fails, instantly load from localStorage so orders are never lost!
+                    globalOrders = JSON.parse(localStorage.getItem('zshop_global_orders')) || [];
+                }
+                
+                document.getElementById('total-orders-count').innerText = globalOrders.length;
+                container.innerHTML = '';
+
+                if (globalOrders.length === 0) {
+                    container.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-32 border border-dashed border-black/10 bg-white/10 rounded-2xl">
+                            <i class="fa-solid fa-box-open text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-[12px] uppercase tracking-[0.3em] text-gray-600 font-bold mb-2">No Orders Found</p>
+                            <p class="text-[10px] tracking-widest text-gray-500">Orders placed by customers will appear here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                globalOrders.forEach((order) => {
+                    let itemsHtml = '';
+                    
+                    // Generate HTML for each item in the order safely
+                    const itemsArray = order.items || [];
+                    itemsArray.forEach(item => {
+                        const meta = item.meta || 'Standard Delivery';
+                        const qty = item.quantity || item.qty || 1;
+                        itemsHtml += `
+                            <div class="flex items-center gap-4 py-3 border-b border-black/5 last:border-0">
+                                <img src="${item.img}" class="w-12 h-12 rounded-lg object-cover bg-white/50 border border-white/80 mix-blend-multiply">
+                                <div class="flex-1">
+                                    <h4 class="text-[13px] font-bold text-gray-900">${item.name}</h4>
+                                    <p class="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">${meta}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[12px] font-bold text-gray-900">Qty: ${qty}</p>
+                                    <p class="text-[12px] font-bold text-[#D4AF37]">$${(item.price * qty).toFixed(2)}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // Graceful fallbacks for missing data
+                    const customerEmail = order.email || "customer@zshop.com"; 
+                    const promoCode = order.promo || "NONE"; 
+                    const isPaid = order.status === "PAID & PROCESSING" || order.status === "SHIPPED";
+
+                    const orderCard = `
+                        <div class="order-card glass-panel bg-white/20 p-6 md:p-8 rounded-2xl border border-white/60">
+                            <!-- Header -->
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-black/10 gap-4">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <h2 class="text-[18px] font-bold text-black tracking-wider">${order.id}</h2>
+                                        <span class="status-badge ${getStatusBadgeClass(order.status)}">${order.status}</span>
+                                    </div>
+                                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Placed on ${order.date}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    ${isPaid && order.status !== "SHIPPED" ? `<button onclick="updateOrderStatus('${order.id}', 'SHIPPED')" class="px-4 py-2 bg-black text-white text-[9px] uppercase tracking-widest font-bold rounded hover:bg-gray-800 transition-colors">Mark Shipped</button>` : ''}
+                                    ${order.status !== "CANCELLED" ? `<button onclick="updateOrderStatus('${order.id}', 'CANCELLED')" class="px-4 py-2 bg-red-900/10 text-red-900 text-[9px] uppercase tracking-widest font-bold rounded border border-red-900/20 hover:bg-red-900/20 transition-colors">Cancel</button>` : ''}
+                                </div>
+                            </div>
+
+                            <!-- Details Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+                                <!-- Customer Info -->
+                                <div>
+                                    <h3 class="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 mb-3">Customer Details</h3>
+                                    <p class="text-[13px] font-bold text-black mb-1"><i class="fa-regular fa-user mr-2 text-gray-500"></i>${order.customer}</p>
+                                    <p class="text-[12px] font-medium text-gray-700 mb-1"><i class="fa-regular fa-envelope mr-2 text-gray-500"></i>${customerEmail}</p>
+                                    <p class="text-[12px] font-medium text-gray-700 leading-relaxed mt-2"><i class="fa-solid fa-location-dot mr-2 text-gray-500"></i>${order.address}</p>
+                                </div>
+
+                                <!-- Payment Info -->
+                                <div>
+                                    <h3 class="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 mb-3">Payment Info</h3>
+                                    <div class="bg-white/40 p-3 rounded-xl border border-white/50">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-[11px] font-medium text-gray-600 uppercase">Payment Status</span>
+                                            <span class="text-[11px] font-bold ${isPaid ? 'text-green-700' : 'text-yellow-600'}">${isPaid ? 'Completed ✓' : 'Pending ⏳'}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-[11px] font-medium text-gray-600 uppercase">Promo Code</span>
+                                            <span class="text-[11px] font-bold text-gray-900">${promoCode}</span>
+                                        </div>
+                                        <div class="h-px bg-black/10 my-2"></div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-[12px] font-bold text-black uppercase">Order Total</span>
+                                            <span class="text-[16px] font-bold text-[#D4AF37]">${order.total}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Items -->
+                                <div class="bg-white/30 rounded-xl border border-white/50 p-4 max-h-[160px] overflow-y-auto">
+                                    <h3 class="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 mb-3 sticky top-0 bg-white/90 backdrop-blur pb-2 -mt-2 pt-2 z-10">Purchased Items (${itemsArray.length})</h3>
+                                    ${itemsHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += orderCard;
+                });
+            }
+
+            // Global function to update status
+            window.updateOrderStatus = async (orderId, newStatus) => {
+                
+                // 1. Optimistic Local Storage Update (Ensures it works even if backend is disconnected)
+                let globalOrders = JSON.parse(localStorage.getItem('zshop_global_orders')) || [];
+                const index = globalOrders.findIndex(o => o.id === orderId);
+                if (index > -1) {
+                    globalOrders[index].status = newStatus;
+                    localStorage.setItem('zshop_global_orders', JSON.stringify(globalOrders));
+                }
+
+                // Also attempt to sync with the user's specific order history array so their personal dashboard updates
+                let userOrders = JSON.parse(localStorage.getItem('vanguard_orders')) || [];
+                const userOrderIndex = userOrders.findIndex(o => o.id === orderId);
+                if(userOrderIndex > -1) {
+                    userOrders[userOrderIndex].status = newStatus;
+                    localStorage.setItem('vanguard_orders', JSON.stringify(userOrders));
+                }
+
+                // 2. Database Update
+                try {
+                    await fetch(`${API_URL}/${orderId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+                } catch (e) {
+                    console.warn("Backend status update failed, updated locally instead.");
+                }
+                
+                // Re-render UI
+                renderOrders();
+            };
+
+            // Initial Render
+            renderOrders();
+        });
+    </script>
+</body>
+</html>

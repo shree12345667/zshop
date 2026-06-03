@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Analytics</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- High-End Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+        }
+        
+        .font-serif-italic {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 300;
+        }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+        
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item { transition: all 0.4s ease; }
+        .nav-item:hover {
+            background: rgba(0, 0, 0, 0.03);
+            border-left: 1px solid rgba(0, 0, 0, 0.3);
+            padding-left: 1.5rem;
+            color: black;
+        }
+        .nav-item.active {
+            background: rgba(0, 0, 0, 0.05);
+            border-left: 1px solid rgba(0, 0, 0, 0.8);
+            padding-left: 1.5rem;
+            color: black;
+        }
+
+        .stat-card { transition: all 0.5s ease; }
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Canvas Wrappers */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen w-screen overflow-hidden selection:bg-black selection:text-white relative text-xs">
+
+    <!-- Native Video Background -->
+    <video id="bg-video" autoplay loop muted playsinline src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4" class="absolute inset-0 w-full h-full object-cover -z-20"></video>
+    <div class="absolute inset-0 bg-black/10 -z-10"></div>
+
+    <div class="flex h-full w-full p-2 md:p-4 gap-4 relative z-10">
+        
+        <!-- Sidebar -->
+        <aside class="w-16 md:w-56 glass-panel flex flex-col transition-all duration-500 z-20">
+            <div class="h-24 flex items-center justify-center border-b border-black/5">
+                <span class="font-serif-italic text-2xl tracking-[0.1em] text-black hidden md:block">Admin</span>
+                <span class="font-serif-italic text-2xl tracking-widest text-black block md:hidden">A</span>
+            </div>
+            
+            <nav class="flex-1 py-8 flex flex-col gap-1 overflow-y-auto">
+                <a href="Admin-dashboard.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-chart-line w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Dashboard</span>
+                </a>
+                <a href="Admin-products.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-gem w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Products</span>
+                </a>
+                <a href="Admin-orders.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-box w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Orders</span>
+                </a>
+                <a href="Customers-info.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-users w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Customers</span>
+                </a>
+                <!-- Analytics Tab is Active -->
+                <a href="Analytics.html" class="nav-item active w-full flex items-center py-3 px-4 text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-chart-pie w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Analytics</span>
+                </a>
+                <a href="discounts.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-tag w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Discounts</span>
+                </a>
+            </nav>
+
+            <div class="border-t border-black/5 p-4">
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-sliders w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Settings</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 glass-panel overflow-y-auto relative p-8 md:p-12">
+            
+            <header class="mb-10 border-b border-black/5 pb-6 flex justify-between items-end">
+                <div>
+                    <p class="text-[9px] uppercase tracking-[0.3em] text-gray-500 mb-2">Performance & Metrics</p>
+                    <h1 class="font-serif-italic text-3xl md:text-4xl text-black tracking-[0.1em]">Analytics</h1>
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="window.location.reload()" class="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-600 bg-white/20 px-4 py-2 rounded-lg border border-white/50 hover:bg-white/40 transition-all shadow-sm">
+                        <i class="fa-solid fa-rotate-right mr-2"></i>Refresh Data
+                    </button>
+                </div>
+            </header>
+            
+            <!-- KPI Strip -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card bg-white/20 border border-white/60 p-6 rounded-2xl shadow-sm">
+                    <p class="text-[9px] text-gray-600 uppercase tracking-widest font-bold mb-2">Total Revenue</p>
+                    <h3 class="font-serif-italic text-3xl text-black" id="kpi-revenue">...</h3>
+                </div>
+                <div class="stat-card bg-white/20 border border-white/60 p-6 rounded-2xl shadow-sm">
+                    <p class="text-[9px] text-gray-600 uppercase tracking-widest font-bold mb-2">Total Orders</p>
+                    <h3 class="font-serif-italic text-3xl text-black" id="kpi-orders">...</h3>
+                </div>
+                <div class="stat-card bg-white/20 border border-white/60 p-6 rounded-2xl shadow-sm">
+                    <p class="text-[9px] text-gray-600 uppercase tracking-widest font-bold mb-2">Avg. Order Value</p>
+                    <h3 class="font-serif-italic text-3xl text-black" id="kpi-aov">...</h3>
+                </div>
+                <div class="stat-card bg-white/20 border border-white/60 p-6 rounded-2xl shadow-sm">
+                    <p class="text-[9px] text-gray-600 uppercase tracking-widest font-bold mb-2">Total Customers</p>
+                    <h3 class="font-serif-italic text-3xl text-black" id="kpi-users">...</h3>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-20">
+                
+                <!-- Main Bar Chart (Revenue Over Time) -->
+                <div class="lg:col-span-2 bg-white/30 border border-white/60 p-6 rounded-3xl shadow-sm">
+                    <h3 class="text-[14px] font-bold text-gray-900 mb-6 tracking-wide">Revenue Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Secondary Doughnut Chart (Order Status) -->
+                <div class="bg-white/30 border border-white/60 p-6 rounded-3xl shadow-sm flex flex-col">
+                    <h3 class="text-[14px] font-bold text-gray-900 mb-6 tracking-wide">Order Fulfillment</h3>
+                    <div class="chart-container flex-1 flex items-center justify-center">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tertiary Pie Chart (Products by Category) -->
+                <div class="lg:col-span-3 bg-white/30 border border-white/60 p-6 rounded-3xl shadow-sm flex flex-col md:flex-row items-center gap-8">
+                    <div class="flex-1">
+                        <h3 class="text-[14px] font-bold text-gray-900 mb-2 tracking-wide">Inventory Distribution</h3>
+                        <p class="text-[11px] text-gray-600 leading-relaxed max-w-sm">A visual breakdown of your active catalog grouped by product categories. Expand under-represented categories to increase average order values.</p>
+                    </div>
+                    <div class="chart-container w-full max-w-md">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+                
+            </div>
+        </main>
+    </div>
+
+    <!-- Analytics Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            
+            // Set global chart fonts
+            Chart.defaults.font.family = "'Montserrat', sans-serif";
+            Chart.defaults.color = '#334155'; // Slate 700
+
+            // Configuration for colors
+            const brandGold = '#D4AF37';
+            const brandDark = '#0F172A';
+            const statusColors = {
+                'PAID & PROCESSING': '#3b82f6', // Blue
+                'SHIPPED': '#22c55e',          // Green
+                'AWAITING PAYMENT': '#eab308',  // Yellow
+                'CANCELLED': '#ef4444'          // Red
+            };
+            const categoryColors = ['#0F172A', '#334155', '#64748B', '#94A3B8', '#CBD5E1', '#D4AF37'];
+
+            // Fetch Logic
+            let globalOrders = [];
+            let globalProducts = [];
+            let globalUsers = [];
+
+            try {
+                // Fetch Orders
+                const ordRes = await fetch('http://127.0.0.1:5000/api/orders', { mode: 'cors' });
+                if(ordRes.ok) {
+                    const data = await ordRes.json();
+                    globalOrders = data.orders || [];
+                } else {
+                    globalOrders = JSON.parse(localStorage.getItem('zshop_global_orders')) || [];
+                }
+
+                // Fetch Products
+                const prodRes = await fetch('http://127.0.0.1:5000/api/products', { mode: 'cors' });
+                if(prodRes.ok) {
+                    const data = await prodRes.json();
+                    globalProducts = data.products ? data.products : (Array.isArray(data) ? data : []);
+                } else {
+                    globalProducts = JSON.parse(localStorage.getItem('store_products')) || [];
+                }
+
+                // Fetch Users
+                const userRes = await fetch('http://127.0.0.1:5000/api/users', { mode: 'cors' });
+                if(userRes.ok) {
+                    const data = await userRes.json();
+                    globalUsers = data.users || [];
+                }
+            } catch (e) {
+                console.warn("Backend disconnected. Attempting local storage fallback.");
+                globalOrders = JSON.parse(localStorage.getItem('zshop_global_orders')) || [];
+                globalProducts = JSON.parse(localStorage.getItem('store_products')) || [];
+            }
+
+            // --- 1. DATA PROCESSING FOR KPIs ---
+            let totalRevenue = 0;
+            let paidOrderCount = 0;
+
+            globalOrders.forEach(order => {
+                if(order.status === "PAID & PROCESSING" || order.status === "SHIPPED") {
+                    const amount = parseFloat(order.total.replace('$', '').replace(/,/g, ''));
+                    if(!isNaN(amount)) {
+                        totalRevenue += amount;
+                        paidOrderCount++;
+                    }
+                }
+            });
+
+            const avgOrderValue = paidOrderCount > 0 ? (totalRevenue / paidOrderCount) : 0;
+            
+            // Calculate unique customers dynamically (orders + registered)
+            let uniqueEmails = new Set(globalUsers.map(u => u.email));
+            globalOrders.forEach(o => { if(o.email) uniqueEmails.add(o.email); });
+
+            document.getElementById('kpi-revenue').innerText = `$${totalRevenue.toFixed(2)}`;
+            document.getElementById('kpi-orders').innerText = globalOrders.length;
+            document.getElementById('kpi-aov').innerText = `$${avgOrderValue.toFixed(2)}`;
+            document.getElementById('kpi-users').innerText = uniqueEmails.size;
+
+            // --- 2. REVENUE OVER TIME (BAR CHART) ---
+            const revenueByDate = {};
+            globalOrders.forEach(order => {
+                if(order.status === "PAID & PROCESSING" || order.status === "SHIPPED") {
+                    const date = order.date || 'Unknown';
+                    const amount = parseFloat(order.total.replace('$', '').replace(/,/g, '')) || 0;
+                    revenueByDate[date] = (revenueByDate[date] || 0) + amount;
+                }
+            });
+
+            // If no data, provide dummy data to show the chart design
+            if(Object.keys(revenueByDate).length === 0) {
+                revenueByDate['May 29'] = 0;
+                revenueByDate['May 30'] = 0;
+                revenueByDate['May 31'] = 0;
+                revenueByDate['Today'] = 0;
+            }
+
+            const ctxRev = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctxRev, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(revenueByDate),
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: Object.values(revenueByDate),
+                        backgroundColor: brandDark,
+                        borderRadius: 6,
+                        barThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // --- 3. ORDER FULFILLMENT STATUS (DOUGHNUT CHART) ---
+            const statusCounts = { 'AWAITING PAYMENT': 0, 'PAID & PROCESSING': 0, 'SHIPPED': 0, 'CANCELLED': 0 };
+            globalOrders.forEach(order => {
+                const s = order.status || 'AWAITING PAYMENT';
+                if(statusCounts[s] !== undefined) statusCounts[s]++;
+            });
+
+            const ctxStatus = document.getElementById('statusChart').getContext('2d');
+            new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{
+                        data: Object.values(statusCounts),
+                        backgroundColor: Object.keys(statusCounts).map(k => statusColors[k]),
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true, padding: 20 } }
+                    }
+                }
+            });
+
+            // --- 4. INVENTORY CATEGORY DISTRIBUTION (PIE CHART) ---
+            const catCounts = {};
+            globalProducts.forEach(p => {
+                let cat = p.category || 'Uncategorized';
+                // Clean up casing
+                cat = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
+                catCounts[cat] = (catCounts[cat] || 0) + 1;
+            });
+
+            // Fallback dummy data if catalog is empty
+            if(Object.keys(catCounts).length === 0) {
+                catCounts['Fashion'] = 1;
+                catCounts['Accessories'] = 1;
+            }
+
+            const ctxCat = document.getElementById('categoryChart').getContext('2d');
+            new Chart(ctxCat, {
+                type: 'polarArea',
+                data: {
+                    labels: Object.keys(catCounts),
+                    datasets: [{
+                        data: Object.values(catCounts),
+                        backgroundColor: categoryColors,
+                        borderWidth: 1,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 10, usePointStyle: true } }
+                    },
+                    scales: {
+                        r: { ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.05)' } }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

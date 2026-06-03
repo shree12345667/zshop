@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Premium | zshop</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#D4AF37', /* Premium Gold */
+                            orangeHover: '#b5952f',
+                            light: '#F8F9FA',
+                            dark: '#0F172A',
+                            gray: '#8E98A8'
+                        }
+                    },
+                    transitionTimingFunction: {
+                        'smooth': 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+                        'bounce-sm': 'cubic-bezier(0.32, 0.72, 0, 1)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #000; -webkit-font-smoothing: antialiased; color: #fff; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
+
+        /* Premium Glass Utilities - Adjusted for dark video bg */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.5); /* Gold border on hover */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            transform: translateY(-4px);
+        }
+
+        /* Fixed Video Overlay */
+        .bg-overlay {
+            position: fixed; inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Text Utilities for Dark Theme */
+        .text-body { color: rgba(255,255,255,0.8); }
+        .text-heading { color: #fff; }
+
+        /* Checkbox Customization */
+        .custom-checkbox {
+            appearance: none; width: 16px; height: 16px; border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px; background-color: transparent; cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .custom-checkbox:checked { background-color: #D4AF37; border-color: #D4AF37; }
+        .custom-checkbox:checked::after {
+            content: ''; position: absolute; left: 4px; top: 1px; width: 5px; height: 9px;
+            border: solid #000; border-width: 0 2px 2px 0; transform: rotate(45deg);
+        }
+
+        /* Overlays & Animations */
+        .overlay { opacity: 0; pointer-events: none; transition: opacity 400ms ease; }
+        .overlay.active { opacity: 1; pointer-events: auto; }
+        .slide-panel { transform: translateX(100%); transition: transform 500ms cubic-bezier(0.25, 0.1, 0.25, 1); }
+        .slide-panel.open { transform: translateX(0); }
+        .slide-panel-left { transform: translateX(-100%); transition: transform 500ms cubic-bezier(0.25, 0.1, 0.25, 1); }
+        .slide-panel-left.open { transform: translateX(0); }
+        .product-item { transition: opacity 0.4s ease, transform 0.4s ease; }
+        .product-item.hidden-item { display: none; opacity: 0; transform: scale(0.95); }
+        
+        /* Logo Custom Color Update */
+        .premium-logo {
+            filter: brightness(0) invert(1); /* Makes logo white for dark bg */
+            transition: transform 0.3s ease;
+        }
+        .premium-logo:hover { transform: scale(1.05); }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative overflow-x-hidden selection:bg-brand-orange selection:text-black">
+
+    <video autoplay loop muted playsinline class="fixed inset-0 w-full h-full object-cover z-[-2]">
+        <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260520_133010_cb9c806d-bc9d-47f1-ac4c-b1759134ec8b.mp4" type="video/mp4">
+    </video>
+    <div class="bg-overlay"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 inset-x-0 z-40 pt-4 px-4 sm:pt-6 sm:px-6 flex justify-center transition-all duration-300">
+        <div class="glass-panel rounded-full p-2.5 flex items-center justify-between w-full max-w-[1440px]">
+            <div class="flex items-center gap-8 pl-4">
+                <a href="index.html" class="flex items-center">
+                    <img src="https://res.cloudinary.com/ds93qby5a/image/upload/v1780223632/Screenshot_2026-05-31_152011-Photoroom_1_s9tty1.png" alt="zshop Logo" class="h-8 premium-logo object-contain" />
+                </a>
+                <div class="hidden md:flex items-center gap-7">
+                    <a href="shop(before login).html" class="text-[13px] font-medium text-white">Shop All</a>
+                    <a href="#special-offers" class="text-[13px] font-medium text-gray-300 hover:text-white transition-colors">Offers</a>
+                    <a href="#products-grid" class="text-[13px] font-medium text-gray-300 hover:text-white transition-colors">Categories</a>
+                </div>
+            </div>
+
+            <div class="hidden md:flex items-center gap-2">
+                <button onclick="window.location.href='Sign-in_reminder.html'" class="hover:bg-white/10 rounded-full px-4 py-2 transition-colors text-[13px] font-medium text-white">
+                    Sign In
+                </button>
+                <button id="open-cart-btn" class="flex items-center bg-brand-orange text-black rounded-full pl-5 pr-1.5 py-1.5 ml-2 shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:bg-yellow-400 transition-colors active:scale-95">
+                    <span id="nav-cart-total" class="text-[13px] font-semibold mr-3">$0.00 (0)</span>
+                    <div class="w-7 h-7 bg-black/10 rounded-full flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="flex md:hidden items-center gap-2 pr-1">
+                <button id="mobile-cart-btn" class="w-10 h-10 flex items-center justify-center bg-brand-orange text-black rounded-full active:scale-95 transition-transform shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header & Slider Area -->
+    <header class="pt-24 sm:pt-28 pb-8 px-5 sm:px-8 lg:px-12 max-w-[1440px] mx-auto w-full relative z-10">
+        <div class="w-full h-[60vh] sm:h-[75vh] rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 relative mb-12 glass-panel p-2">
+            <iframe src="Slider.html" class="w-full h-full rounded-[1.5rem] border-none bg-black" title="zshop Premium Slider"></iframe>
+        </div>
+    </header>
+
+    <!-- Special Offers Section -->
+    <section id="special-offers" class="px-5 sm:px-8 lg:px-12 max-w-[1440px] mx-auto w-full mb-16 relative z-10">
+        <div class="glass-panel p-6 sm:p-8 rounded-[2rem]">
+            <h2 class="text-[28px] font-semibold tracking-tight text-white mb-6">Exclusive Offers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Offer 1 -->
+                <div class="relative overflow-hidden rounded-[2rem] h-64 group border border-white/10 shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=2070&auto=format&fit=crop" alt="Furniture Offer" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent flex items-center p-8 sm:p-12">
+                        <div class="text-white max-w-xs">
+                            <span class="text-brand-orange font-bold text-sm uppercase tracking-wider mb-2 block">Up to 30% Off</span>
+                            <h3 class="text-3xl font-bold mb-3 text-white">Modern Living Refresh</h3>
+                            <button class="bg-white text-black px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-200 transition-colors" onclick="window.location.href='#products-grid'">Shop Now</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Offer 2 -->
+                <div class="relative overflow-hidden rounded-[2rem] h-64 group border border-white/10 shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=2070&auto=format&fit=crop" alt="Tech Offer" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent flex items-center p-8 sm:p-12">
+                        <div class="text-white max-w-xs">
+                            <span class="text-brand-orange font-bold text-sm uppercase tracking-wider mb-2 block">New Arrivals</span>
+                            <h3 class="text-3xl font-bold mb-3 text-white">Next-Gen Gaming Gear</h3>
+                            <button class="bg-white text-black px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-200 transition-colors" onclick="window.location.href='#products-grid'">Explore Tech</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Products Header -->
+    <div id="products-header" class="px-5 sm:px-8 lg:px-12 max-w-[1440px] mx-auto w-full relative z-10 pt-4">
+        <div class="glass-panel p-6 sm:p-8 rounded-[2rem] flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 mt-4">
+            <div>
+                <h1 class="text-[32px] sm:text-[40px] font-semibold tracking-tight text-white mb-3">The Master Collection</h1>
+                <p class="text-[14px] text-body max-w-xl leading-relaxed">
+                    Explore our diverse range of curated categories. Discover perfection in furniture, fashion, cosmetics, technology, and more.
+                </p>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-3">
+                <span class="text-[13px] text-gray-400 font-medium">Sort by:</span>
+                <select id="desktop-sort" class="bg-black/50 backdrop-blur border border-white/20 px-4 py-2 rounded-full text-[13px] font-medium text-white shadow-sm hover:bg-black/70 transition-colors outline-none cursor-pointer focus:border-brand-orange">
+                    <option value="featured" class="bg-gray-900">Featured</option>
+                    <option value="newest" class="bg-gray-900">Newest Arrivals</option>
+                    <option value="low" class="bg-gray-900">Price: Low to High</option>
+                    <option value="high" class="bg-gray-900">Price: High to Low</option>
+                </select>
+            </div>
+            
+            <button id="open-mobile-filters" class="md:hidden flex items-center justify-center gap-2 w-full bg-white/10 backdrop-blur border border-white/20 px-4 py-3 rounded-xl text-[14px] font-medium text-white shadow-sm active:scale-[0.98] transition-transform">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="21" y2="14"/><line x1="4" x2="20" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/></svg>
+                Filters & Sort
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Sidebar & Grid -->
+    <main class="flex-1 px-5 sm:px-8 lg:px-12 max-w-[1440px] mx-auto w-full flex gap-10 pb-32 relative z-10">
+        
+        <!-- Desktop Sidebar -->
+        <aside class="hidden md:block w-56 lg:w-64 shrink-0">
+            <div class="sticky top-28 space-y-8 glass-panel p-6 rounded-2xl">
+                
+                <div>
+                    <h3 class="text-[14px] font-semibold text-white mb-4 flex items-center justify-between">Categories</h3>
+                    <ul class="space-y-3" id="desktop-category-filters">
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="all" class="custom-checkbox filter-category" checked>
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">All Collections</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="furniture" class="custom-checkbox filter-category">
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">Furniture</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="fashion" class="custom-checkbox filter-category">
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">Fashion</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="cosmetics" class="custom-checkbox filter-category">
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">Cosmetics</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="gaming" class="custom-checkbox filter-category">
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">Gaming & Tech</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="stationery" class="custom-checkbox filter-category">
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">Stationery</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="wellness" class="custom-checkbox filter-category">
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">Wellness & Energy</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="h-px bg-white/10 w-full"></div>
+
+                <div>
+                    <h3 class="text-[14px] font-semibold text-white mb-4">Price Range</h3>
+                    <ul class="space-y-3" id="desktop-price-filters">
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="under-50" class="custom-checkbox filter-price">
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">Under $50</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="50-100" class="custom-checkbox filter-price">
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">$50 - $100</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="100-200" class="custom-checkbox filter-price">
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">$100 - $200</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center gap-3 group cursor-pointer">
+                                <input type="checkbox" value="over-200" class="custom-checkbox filter-price">
+                                <span class="text-[13px] text-gray-300 group-hover:text-white transition-colors">Over $200</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Product Grid Content -->
+        <div class="flex-1 w-full">
+            
+            <div class="mb-6 flex items-center justify-between">
+                <p class="text-[13px] text-gray-400">Showing <span class="font-medium text-white" id="product-count">0</span> premium products</p>
+                <button id="clear-filters" class="hidden text-[12px] text-brand-orange hover:text-yellow-400 transition-colors font-medium">Clear All Filters</button>
+            </div>
+
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+                <!-- Javascript fills this dynamically FROM DATABASE ONLY -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Filters Overlay -->
+    <div id="mobile-filter-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 overlay">
+        <div id="mobile-filter-sidebar" class="absolute top-0 left-0 h-full w-[85%] sm:w-[350px] bg-slate-900/95 backdrop-blur-xl border-r border-white/10 shadow-2xl flex flex-col slide-panel-left p-6">
+            
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+                <h2 class="text-[18px] font-semibold tracking-tight text-white">Filters & Sort</h2>
+                <button id="close-mobile-filters" class="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto space-y-8 pr-2">
+                <div>
+                    <h3 class="text-[14px] font-semibold text-white mb-4">Sort By</h3>
+                    <select id="mobile-sort" class="w-full bg-black/50 border border-white/20 text-white text-[13px] rounded-lg focus:border-brand-orange outline-none block p-2.5">
+                        <option value="featured">Featured</option>
+                        <option value="newest">Newest Arrivals</option>
+                        <option value="low">Price: Low to High</option>
+                        <option value="high">Price: High to Low</option>
+                    </select>
+                </div>
+
+                <div>
+                    <h3 class="text-[14px] font-semibold text-white mb-4">Categories</h3>
+                    <ul class="space-y-3" id="mobile-category-filters">
+                        <li><label class="flex items-center gap-3"><input type="checkbox" value="all" class="custom-checkbox filter-category" checked><span class="text-[13px] text-gray-300">All Collections</span></label></li>
+                        <li><label class="flex items-center gap-3"><input type="checkbox" value="furniture" class="custom-checkbox filter-category"><span class="text-[13px] text-gray-300">Furniture</span></label></li>
+                        <li><label class="flex items-center gap-3"><input type="checkbox" value="fashion" class="custom-checkbox filter-category"><span class="text-[13px] text-gray-300">Fashion</span></label></li>
+                        <li><label class="flex items-center gap-3"><input type="checkbox" value="cosmetics" class="custom-checkbox filter-category"><span class="text-[13px] text-gray-300">Cosmetics</span></label></li>
+                        <li><label class="flex items-center gap-3"><input type="checkbox" value="gaming" class="custom-checkbox filter-category"><span class="text-[13px] text-gray-300">Gaming & Tech</span></label></li>
+                        <li><label class="flex items-center gap-3"><input type="checkbox" value="stationery" class="custom-checkbox filter-category"><span class="text-[13px] text-gray-300">Stationery</span></label></li>
+                        <li><label class="flex items-center gap-3"><input type="checkbox" value="wellness" class="custom-checkbox filter-category"><span class="text-[13px] text-gray-300">Wellness & Energy</span></label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-6 border-t border-white/10 bg-transparent">
+                <button class="w-full bg-brand-orange text-black text-[14px] font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.2)]" id="apply-mobile-filters">
+                    Show Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 overlay">
+        <div id="cart-sidebar" class="absolute top-0 right-0 h-full w-full sm:w-[400px] bg-slate-900/95 backdrop-blur-xl border-l border-white/10 shadow-2xl flex flex-col p-6 slide-panel">
+            
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-[20px] font-semibold tracking-tight text-white">Your Premium Cart</h2>
+                <button id="close-cart-btn" class="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div id="cart-items-container" class="flex-1 overflow-y-auto space-y-4 pr-2">
+                <div id="empty-cart-msg" class="text-center text-gray-400 text-[14px] mt-10">Your cart is currently empty.</div>
+            </div>
+
+            <div class="mt-auto pt-6 border-t border-white/10">
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="promo-input" placeholder="Promo code (ZSHOP20)" class="flex-1 bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-[13px] text-white outline-none focus:border-brand-orange uppercase placeholder-gray-500">
+                    <button id="apply-promo-btn" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-[13px] font-medium transition-colors border border-white/10">Apply</button>
+                </div>
+
+                <div class="space-y-2 mb-6 text-[14px]">
+                    <div class="flex justify-between text-gray-300"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+                    <div class="flex justify-between text-brand-orange font-medium hidden" id="discount-row">
+                        <span>Discount (<span id="active-promo-code"></span>)</span><span id="cart-discount">-$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-[18px] font-semibold text-white pt-2 border-t border-white/10 mt-2">
+                        <span>Total</span><span id="cart-total">$0.00</span>
+                    </div>
+                </div>
+
+                <button class="w-full bg-brand-orange text-black text-[15px] font-bold py-3.5 rounded-xl shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:bg-yellow-400 transition-colors" onclick="openSignInReminder(event)">
+                    Secure Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign In Reminder Modal -->
+    <div id="reminder-modal-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] overlay flex items-center justify-center p-4">
+        <div id="reminder-modal-content" class="relative w-full max-w-4xl h-[650px] max-h-[95vh] bg-slate-900/95 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-white/10 overflow-hidden scale-95 opacity-0 transition-all duration-400">
+            <div class="absolute top-0 inset-x-0 h-14 bg-black/50 backdrop-blur-md border-b border-white/10 flex items-center justify-between px-6 z-10">
+                <span class="text-[14px] font-semibold text-white tracking-tight">zshop Security</span>
+                <button id="close-reminder-btn" class="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <iframe src="Sign-in_reminder.html" class="w-full h-full pt-14 border-none bg-black" title="Sign In Reminder"></iframe>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- STRICTLY BACKEND API INTEGRATION ---
+            const API_URL = 'http://127.0.0.1:5000/api/products';
+            const productGrid = document.getElementById('product-grid');
+            const productCountEl = document.getElementById('product-count');
+
+            async function fetchProducts() {
+                productGrid.innerHTML = '<div class="col-span-full text-center py-16 text-white text-sm font-medium tracking-widest uppercase">Loading master collection...</div>';
+                try {
+                    // Try to fetch from the database
+                    const response = await fetch(API_URL, { mode: 'cors' });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.products && data.products.length > 0) {
+                        renderProducts(data.products);
+                    } else if (Array.isArray(data) && data.length > 0) {
+                        renderProducts(data);
+                    } else {
+                        productGrid.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400">No products available in the store yet.</div>';
+                        document.getElementById('header-product-count').textContent = '0';
+                    }
+                } catch (error) {
+                    console.error("Backend fetch failed.", error);
+                    // NO LOCALSTORAGE FALLBACK! Just a clean error message.
+                    productGrid.innerHTML = `
+                        <div class="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-white/20 rounded-2xl">
+                            <i class="text-red-400 text-4xl mb-4">⚠</i>
+                            <p class="text-white font-medium text-lg mb-2">Server Connection Failed</p>
+                            <p class="text-gray-400 text-sm max-w-md">Cannot reach the database at http://127.0.0.1:5000.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            function renderProducts(productsData) {
+                productGrid.innerHTML = '';
+                
+                if (productsData.length === 0) {
+                    productGrid.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400">No products available in the store yet.</div>';
+                    productCountEl.textContent = '0';
+                    return;
+                }
+
+                productsData.forEach(p => {
+                    const imgSrc = p.image || p.image_url || 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?auto=format&fit=crop&q=80&w=600';
+                    const category = (p.category || 'all').toLowerCase();
+                    const price = parseFloat(p.price || 0).toFixed(2);
+                    const name = p.name || 'Premium Item';
+                    const brand = p.brand || p.size || '';
+                    
+                    const imageClass = category === 'wellness' 
+                        ? "w-full h-full p-6 bg-white object-contain rounded-xl transition-transform duration-700 group-hover:scale-105" 
+                        : "w-full h-full object-cover rounded-xl transition-transform duration-700 group-hover:scale-105";
+
+                    const productEl = document.createElement('div');
+                    productEl.className = 'product-item group relative flex flex-col';
+                    productEl.setAttribute('data-category', category);
+                    productEl.setAttribute('data-price', price);
+                    productEl.setAttribute('data-name', name);
+
+                    productEl.innerHTML = `
+                        <div class="glass-card p-3 rounded-2xl relative overflow-hidden aspect-[4/5]">
+                            <img src="${imgSrc}" alt="${name}" class="${imageClass}">
+                            <div class="absolute inset-x-3 bottom-3 translate-y-[120%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400 ease-smooth z-20 flex gap-2">
+                                <button onclick="openSignInReminder(event)" class="flex-1 bg-white text-black text-[13px] font-semibold py-3 rounded-xl shadow-lg hover:bg-gray-200 transition-colors">Buy Now</button>
+                                <button class="add-to-cart-btn w-12 bg-black/80 backdrop-blur-md text-white border border-white/20 flex items-center justify-center rounded-xl shadow-lg hover:bg-black transition-colors" data-id="${p.id}" data-name="${name}" data-price="${price}" data-img="${imgSrc}">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-4 rounded-[1rem] mt-3 flex justify-between items-start">
+                            <div><h3 class="text-[14px] font-medium text-white">${name}</h3><p class="text-[13px] text-gray-300 mt-0.5">${brand}</p></div>
+                            <span class="text-[14px] font-semibold text-brand-orange">$${price}</span>
+                        </div>
+                    `;
+                    productGrid.appendChild(productEl);
+                });
+
+                filterGrid();
+            }
+
+            fetchProducts();
+
+            // --- Reminder Modal Logic ---
+            const reminderOverlay = document.getElementById('reminder-modal-overlay');
+            const reminderContent = document.getElementById('reminder-modal-content');
+            const closeReminderBtn = document.getElementById('close-reminder-btn');
+
+            window.openSignInReminder = (e) => {
+                if(e) e.stopPropagation();
+                reminderOverlay.classList.add('active');
+                setTimeout(() => {
+                    reminderContent.classList.remove('scale-95', 'opacity-0');
+                    reminderContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            };
+
+            const closeSignInReminder = () => {
+                reminderContent.classList.remove('scale-100', 'opacity-100');
+                reminderContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    reminderOverlay.classList.remove('active');
+                    if(!document.getElementById('cart-overlay').classList.contains('active') &&
+                       !document.getElementById('mobile-filter-overlay').classList.contains('active')) {
+                        document.body.style.overflow = '';
+                    }
+                }, 300);
+            };
+
+            closeReminderBtn.addEventListener('click', closeSignInReminder);
+            reminderOverlay.addEventListener('click', (e) => { if(e.target === reminderOverlay) closeSignInReminder(); });
+
+            // --- Dynamic Grid Filtering Logic ---
+            const clearFiltersBtn = document.getElementById('clear-filters');
+            const categoryCheckboxes = document.querySelectorAll('.filter-category');
+            const priceCheckboxes = document.querySelectorAll('.filter-price');
+
+            const filterGrid = () => {
+                const currentProducts = document.querySelectorAll('.product-item');
+                
+                let activeCategories = Array.from(categoryCheckboxes)
+                    .filter(cb => cb.checked && cb.value !== 'all')
+                    .map(cb => cb.value);
+                
+                const isAllCategory = document.querySelector('.filter-category[value="all"]').checked;
+                if(isAllCategory && activeCategories.length === 0) activeCategories = ['all'];
+
+                let activePrices = Array.from(priceCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                let visibleCount = 0;
+
+                currentProducts.forEach(product => {
+                    const cat = product.getAttribute('data-category');
+                    const price = parseFloat(product.getAttribute('data-price'));
+                    
+                    let catMatch = activeCategories.includes('all') || activeCategories.includes(cat);
+                    
+                    let priceMatch = true;
+                    if (activePrices.length > 0) {
+                        priceMatch = false;
+                        if (activePrices.includes('under-50') && price < 50) priceMatch = true;
+                        if (activePrices.includes('50-100') && price >= 50 && price <= 100) priceMatch = true;
+                        if (activePrices.includes('100-200') && price > 100 && price <= 200) priceMatch = true;
+                        if (activePrices.includes('over-200') && price > 200) priceMatch = true;
+                    }
+
+                    if (catMatch && priceMatch) {
+                        product.classList.remove('hidden-item');
+                        visibleCount++;
+                    } else {
+                        product.classList.add('hidden-item');
+                    }
+                });
+
+                productCountEl.textContent = visibleCount;
+                
+                if(!isAllCategory || activePrices.length > 0) {
+                    clearFiltersBtn.classList.remove('hidden');
+                } else {
+                    clearFiltersBtn.classList.add('hidden');
+                }
+            };
+
+            categoryCheckboxes.forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    if (e.target.value === 'all' && e.target.checked) {
+                        categoryCheckboxes.forEach(box => { if(box.value !== 'all') box.checked = false; });
+                    } else if (e.target.value !== 'all' && e.target.checked) {
+                        document.querySelector('.filter-category[value="all"]').checked = false;
+                    }
+                    filterGrid();
+                });
+            });
+
+            priceCheckboxes.forEach(cb => cb.addEventListener('change', filterGrid));
+
+            clearFiltersBtn.addEventListener('click', () => {
+                categoryCheckboxes.forEach(box => box.checked = (box.value === 'all'));
+                priceCheckboxes.forEach(box => box.checked = false);
+                filterGrid();
+            });
+
+            // --- Mobile Filter Drawer Logic ---
+            const filterOverlay = document.getElementById('mobile-filter-overlay');
+            const filterSidebar = document.getElementById('mobile-filter-sidebar');
+            const openFilterBtn = document.getElementById('open-mobile-filters');
+            const closeFilterBtn = document.getElementById('close-mobile-filters');
+            const applyFilterBtn = document.getElementById('apply-mobile-filters');
+
+            const toggleFilters = () => {
+                const isOpen = filterOverlay.classList.contains('active');
+                if(isOpen) {
+                    filterSidebar.classList.remove('open');
+                    setTimeout(() => filterOverlay.classList.remove('active'), 300);
+                    document.body.style.overflow = '';
+                } else {
+                    filterOverlay.classList.add('active');
+                    setTimeout(() => filterSidebar.classList.add('open'), 10);
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+
+            openFilterBtn.addEventListener('click', toggleFilters);
+            closeFilterBtn.addEventListener('click', toggleFilters);
+            applyFilterBtn.addEventListener('click', toggleFilters);
+            filterOverlay.addEventListener('click', (e) => { if(e.target === filterOverlay) toggleFilters(); });
+
+            // --- Shopping Cart Logic ---
+            // Note: Even though product fetching is backend-only, cart state must use localStorage 
+            // so a user's cart isn't lost if they accidentally refresh the page before checkout.
+            let cart = JSON.parse(localStorage.getItem('vanguard_cart_guest')) || [];
+            let discountRate = 0;
+            const promoCodes = { 'ZSHOP20': 0.20, 'SUMMER10': 0.10 };
+
+            const cartOverlay = document.getElementById('cart-overlay');
+            const cartSidebar = document.getElementById('cart-sidebar');
+            const openCartBtn = document.getElementById('open-cart-btn');
+            const mobileCartBtn = document.getElementById('mobile-cart-btn');
+            const closeCartBtn = document.getElementById('close-cart-btn');
+            const cartItemsContainer = document.getElementById('cart-items-container');
+            const emptyCartMsg = document.getElementById('empty-cart-msg');
+            const navCartTotal = document.getElementById('nav-cart-total');
+            
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const totalEl = document.getElementById('cart-total');
+            const discountRow = document.getElementById('discount-row');
+            const discountEl = document.getElementById('cart-discount');
+            const promoInput = document.getElementById('promo-input');
+
+            const saveCart = () => localStorage.setItem('vanguard_cart_guest', JSON.stringify(cart));
+
+            const toggleCart = () => {
+                const isOpen = cartOverlay.classList.contains('active');
+                if(isOpen) {
+                    cartSidebar.classList.remove('open');
+                    setTimeout(() => cartOverlay.classList.remove('active'), 300);
+                    document.body.style.overflow = '';
+                } else {
+                    cartOverlay.classList.add('active');
+                    setTimeout(() => cartSidebar.classList.add('open'), 10);
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+
+            if(openCartBtn) openCartBtn.addEventListener('click', toggleCart);
+            if(mobileCartBtn) mobileCartBtn.addEventListener('click', toggleCart);
+            closeCartBtn.addEventListener('click', toggleCart);
+            cartOverlay.addEventListener('click', (e) => { if(e.target === cartOverlay) toggleCart(); });
+
+            const updateCartUI = () => {
+                Array.from(cartItemsContainer.children).forEach(child => {
+                    if (child.id !== 'empty-cart-msg') child.remove();
+                });
+
+                let subtotal = 0; let itemCount = 0;
+
+                if (cart.length === 0) {
+                    emptyCartMsg.style.display = 'block';
+                } else {
+                    emptyCartMsg.style.display = 'none';
+                    cart.forEach((item, index) => {
+                        subtotal += (item.price * item.quantity);
+                        itemCount += item.quantity;
+                        const itemEl = document.createElement('div');
+                        itemEl.className = 'flex gap-4 p-3 bg-white/5 border border-white/10 rounded-xl shadow-sm';
+                        itemEl.innerHTML = `
+                            <img src="${item.img}" class="w-16 h-16 rounded-lg object-cover bg-black">
+                            <div class="flex-1">
+                                <h4 class="text-[13px] font-medium text-white">${item.name}</h4>
+                                <div class="text-[13px] text-gray-400 mt-1">$${item.price.toFixed(2)}</div>
+                                <div class="flex items-center gap-3 mt-2">
+                                    <button class="text-gray-400 hover:text-white transition-colors px-2 py-1" onclick="updateQty(${index}, -1)">-</button>
+                                    <span class="text-[12px] font-medium text-white">${item.quantity}</span>
+                                    <button class="text-gray-400 hover:text-white transition-colors px-2 py-1" onclick="updateQty(${index}, 1)">+</button>
+                                </div>
+                            </div>
+                        `;
+                        cartItemsContainer.appendChild(itemEl);
+                    });
+                }
+
+                const discountAmount = subtotal * discountRate;
+                const total = subtotal - discountAmount;
+
+                subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+                totalEl.textContent = `$${total.toFixed(2)}`;
+                if(navCartTotal) navCartTotal.textContent = `$${total.toFixed(2)} (${itemCount})`;
+
+                if (discountRate > 0) {
+                    discountRow.classList.remove('hidden');
+                    discountEl.textContent = `-$${discountAmount.toFixed(2)}`;
+                } else { discountRow.classList.add('hidden'); }
+            };
+
+            window.updateQty = (index, change) => {
+                cart[index].quantity += change;
+                if (cart[index].quantity <= 0) cart.splice(index, 1);
+                saveCart();
+                updateCartUI();
+            };
+
+            productGrid.addEventListener('click', (e) => {
+                const btn = e.target.closest('.add-to-cart-btn');
+                if (!btn) return;
+                
+                e.stopPropagation(); 
+                const item = {
+                    id: btn.dataset.id,
+                    name: btn.dataset.name,
+                    price: parseFloat(btn.dataset.price),
+                    img: btn.dataset.img,
+                    quantity: 1
+                };
+                const existing = cart.find(i => i.id === item.id);
+                if(existing) existing.quantity++; else cart.push(item);
+                saveCart();
+                updateCartUI();
+                
+                if(!cartOverlay.classList.contains('active')) toggleCart();
+            });
+
+            document.getElementById('apply-promo-btn').addEventListener('click', () => {
+                const code = promoInput.value.trim().toUpperCase();
+                if (promoCodes[code]) {
+                    discountRate = promoCodes[code];
+                    document.getElementById('active-promo-code').textContent = code;
+                    promoInput.value = ''; updateCartUI();
+                } else { alert('Invalid promo code'); discountRate = 0; updateCartUI(); }
+            });
+
+            // Initial UI Update for Cart
+            updateCartUI();
+        });
+    </script>
+</body>
+</html>

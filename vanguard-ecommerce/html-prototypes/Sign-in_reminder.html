@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In Reminder | Vanguard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#F26522',
+                            dark: '#0F172A',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Archivo Black', 'sans-serif'], 
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-font-smoothing: antialiased;
+            background-color: transparent; 
+            margin: 0;
+            overflow-x: hidden; 
+            overflow-y: auto;
+        }
+
+        /* Hide scrollbar for a cleaner modal look */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        /* Premium Staggered Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(15px);
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Subtle float for the character and question mark */
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-float {
+            animation: float-gentle 4s ease-in-out infinite;
+        }
+
+        @keyframes float-question {
+            0%, 100% { transform: translateY(0) rotate(-10deg) scale(1); }
+            50% { transform: translateY(-10px) rotate(5deg) scale(1.1); }
+        }
+        .animate-question {
+            animation: float-question 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="w-full min-h-screen flex items-center justify-center p-4 sm:p-8 text-brand-dark bg-white">
+
+    <div class="w-full max-w-2xl mx-auto flex flex-col">
+        
+        <!-- MASSIVE HEADLINE (The "Roof") -->
+        <div class="mb-6 sm:mb-10 w-full text-center fade-in-up">
+            <h1 class="font-display text-[44px] sm:text-[56px] leading-[0.9] tracking-tighter uppercase text-black">
+                Wait, Who<br>Are You?
+            </h1>
+        </div>
+
+        <!-- 2-COLUMN COMPACT GRID -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 items-center">
+            
+            <!-- LEFT COLUMN: Text & Buttons -->
+            <div class="flex flex-col justify-center order-2 sm:order-1">
+                
+                <div class="fade-in-up delay-100 mb-6">
+                    <p class="text-[13px] sm:text-[14px] font-medium text-gray-600 leading-relaxed mb-3">
+                        Please sign in to your Zshop account to proceed with your buying and save your details.
+                    </p>
+                    <p class="text-[13px] sm:text-[14px] font-medium text-gray-600 leading-relaxed">
+                        If not signed in, you can register your account to Zshop.
+                    </p>
+                </div>
+
+                <!-- Action Buttons perfectly stacked -->
+                <div class="flex flex-col gap-3 fade-in-up delay-300">
+                    <!-- Primary Action -->
+                    <button onclick="window.parent.location.href='login.html'" 
+                            class="group w-full bg-black text-white text-[13px] sm:text-[14px] font-bold py-3.5 px-4 rounded-xl hover:bg-gray-800 active:scale-95 transition-all flex items-center justify-center gap-2">
+                        Sign In
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </button>
+                    
+                    <!-- Secondary Action -->
+                    <button onclick="window.parent.location.href='register.html'" 
+                            class="w-full bg-brand-orange text-white text-[13px] sm:text-[14px] font-bold py-3.5 px-4 rounded-xl hover:bg-[#e05a1a] active:scale-95 transition-all">
+                        Register Account
+                    </button>
+                    
+                    <!-- Cancel -->
+                    <button onclick="window.parent.document.getElementById('close-reminder-btn').click()" 
+                            class="w-full bg-transparent text-gray-500 text-[13px] sm:text-[14px] font-bold py-2.5 px-4 rounded-xl hover:bg-gray-100 hover:text-gray-800 transition-colors mt-1">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: The Character -->
+            <div class="flex justify-center relative fade-in-up delay-200 order-1 sm:order-2 mb-4 sm:mb-0">
+                
+                <!-- Animated Floating Question Marks -->
+                <div class="absolute top-[10%] left-[10%] text-[32px] sm:text-[42px] text-gray-300 font-serif font-bold animate-question z-0">
+                    ?
+                </div>
+                <div class="absolute top-[20%] right-[15%] text-[24px] sm:text-[28px] text-gray-200 font-serif font-bold animate-question delay-200 z-0" style="animation-delay: 1.5s;">
+                    ?
+                </div>
+                
+                <!-- Character Image -->
+                <div class="animate-float relative z-10">
+                    <img src="https://res.cloudinary.com/ds93qby5a/image/upload/v1780070581/confuse_vqzbka.png" 
+                         alt="Confused Customer" 
+                         class="h-[180px] sm:h-[240px] object-contain">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account | Zshop Premium Essentials</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#F26522',
+                            dark: '#0F172A',
+                        }
+                    },
+                    transitionTimingFunction: {
+                        'smooth': 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #F8F9FA; 
+            -webkit-font-smoothing: antialiased; 
+            overflow: hidden; 
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .video-bg-container { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+        .video-bg-container video { width: 100%; height: 100%; object-fit: cover; }
+        .video-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.05); }
+
+        .tilt-container { perspective: 1500px; }
+        #tilt-card { transition: height 0.4s ease; position: relative; transform-origin: center center; will-change: transform; }
+
+        .glare {
+            position: absolute; inset: 0; border-radius: 2rem;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 60%);
+            opacity: 0; pointer-events: none; mix-blend-mode: overlay;
+        }
+
+        .flat-input {
+            background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255, 255, 255, 0.6); transition: all 0.2s ease;
+        }
+        .flat-input:focus {
+            background: rgba(255, 255, 255, 0.7); border-color: rgba(15, 23, 42, 0.3);
+        }
+
+        .form-view { transition: opacity 0.4s ease, transform 0.4s ease; position: absolute; top: 0; left: 0; width: 100%; }
+        .form-hidden { opacity: 0; pointer-events: none; transform: translateY(10px); }
+        .form-active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    </style>
+</head>
+<body class="w-full min-h-screen flex flex-col relative text-brand-dark">
+
+    <div class="video-bg-container">
+        <video autoplay muted loop playsinline>
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260428_193507_4286c423-2fd9-4efd-92bd-91a939453fc1.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <nav class="absolute top-0 inset-x-0 z-40 pt-6 px-6 sm:px-12 flex justify-between items-center">
+        <a href="index.html" class="text-[18px] font-bold tracking-tight uppercase hover:opacity-70 transition-opacity">Zshop</a>
+        <a href="shop.html" class="flex items-center gap-2 text-[14px] font-medium text-gray-800 hover:text-black transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back to Shop
+        </a>
+    </nav>
+
+    <main class="flex-1 flex items-center justify-center p-4 w-full h-full tilt-container">
+        <div id="tilt-card" class="glass-panel w-full max-w-md rounded-[2rem] p-8 sm:p-10 relative overflow-hidden" style="height: 480px;">
+            <div class="glare" id="card-glare"></div>
+
+            <!-- LOGIN FORM -->
+            <div id="view-login" class="form-view form-active p-8 sm:p-10">
+                <div class="text-center mb-8">
+                    <h1 class="text-[28px] font-bold tracking-tight text-gray-900 mb-2">Welcome Back</h1>
+                    <p class="text-[14px] text-gray-800 font-medium">Enter your details to access your account.</p>
+                </div>
+
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-[12px] font-bold text-gray-800 mb-1.5 ml-1 uppercase tracking-wider">Email Address</label>
+                        <input type="email" required placeholder="you@example.com" class="w-full flat-input rounded-xl px-4 py-3.5 text-[14px] outline-none placeholder-gray-600 font-medium">
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5 px-1">
+                            <label class="block text-[12px] font-bold text-gray-800 uppercase tracking-wider">Password</label>
+                            <a href="#" class="text-[12px] font-bold text-brand-orange hover:underline">Forgot?</a>
+                        </div>
+                        <input type="password" required placeholder="••••••••" class="w-full flat-input rounded-xl px-4 py-3.5 text-[14px] outline-none placeholder-gray-600 font-medium">
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-dark text-white rounded-xl py-4 mt-4 text-[14px] font-bold hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                        Sign In
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </button>
+                </form>
+
+                <p class="text-center text-[13px] text-gray-800 font-medium mt-8">
+                    Don't have an account? 
+                    <button onclick="switchView('register')" class="text-black font-bold hover:underline ml-1 cursor-pointer">Register here</button>
+                </p>
+            </div>
+
+            <!-- REGISTER FORM -->
+            <div id="view-register" class="form-view form-hidden p-8 sm:p-10">
+                <div class="text-center mb-8">
+                    <h1 class="text-[28px] font-bold tracking-tight text-gray-900 mb-2">Create Account</h1>
+                    <p class="text-[14px] text-gray-800 font-medium">Join Vanguard for exclusive access.</p>
+                </div>
+
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-[12px] font-bold text-gray-800 mb-1.5 ml-1 uppercase tracking-wider">Full Name</label>
+                        <input type="text" required placeholder="John Doe" class="w-full flat-input rounded-xl px-4 py-3.5 text-[14px] outline-none placeholder-gray-600 font-medium">
+                    </div>
+
+                    <div>
+                        <label class="block text-[12px] font-bold text-gray-800 mb-1.5 ml-1 uppercase tracking-wider">Email Address</label>
+                        <input type="email" required placeholder="you@example.com" class="w-full flat-input rounded-xl px-4 py-3.5 text-[14px] outline-none placeholder-gray-600 font-medium">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[12px] font-bold text-gray-800 mb-1.5 ml-1 uppercase tracking-wider">Password</label>
+                        <input type="password" required placeholder="Create a strong password" class="w-full flat-input rounded-xl px-4 py-3.5 text-[14px] outline-none placeholder-gray-600 font-medium">
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-orange text-white rounded-xl py-4 mt-4 text-[14px] font-bold hover:bg-[#e05a1a] active:scale-[0.98] transition-all">
+                        Complete Registration
+                    </button>
+                </form>
+
+                <p class="text-center text-[13px] text-gray-800 font-medium mt-8">
+                    Already a member? 
+                    <button onclick="switchView('login')" class="text-black font-bold hover:underline ml-1 cursor-pointer">Sign in</button>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 3D Card Physics
+            const card = document.getElementById('tilt-card');
+            const glare = document.getElementById('card-glare');
+            let bounds; let targetX = 0, targetY = 0; let currentX = 0, currentY = 0;
+            let targetGlareOp = 0, currentGlareOp = 0; let targetGlareX = 50, targetGlareY = 50;
+            let currentGlareX = 50, currentGlareY = 50; let isHovering = false; let rafId;
+
+            const updateBounds = () => { bounds = card.getBoundingClientRect(); };
+            const lerp = (start, end, factor) => start + (end - start) * factor;
+
+            const animate = () => {
+                currentX = lerp(currentX, targetX, 0.08); currentY = lerp(currentY, targetY, 0.08);
+                currentGlareOp = lerp(currentGlareOp, targetGlareOp, 0.1);
+                currentGlareX = lerp(currentGlareX, targetGlareX, 0.1); currentGlareY = lerp(currentGlareY, targetGlareY, 0.1);
+                card.style.transform = `scale(1.01) rotateX(${currentY}deg) rotateY(${currentX}deg)`;
+                glare.style.opacity = currentGlareOp;
+                glare.style.background = `radial-gradient(circle at ${currentGlareX}% ${currentGlareY}%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 60%)`;
+                if (isHovering || Math.abs(currentX) > 0.1 || Math.abs(currentY) > 0.1) { rafId = requestAnimationFrame(animate); } 
+                else { card.style.transform = `scale(1) rotateX(0deg) rotateY(0deg)`; glare.style.opacity = 0; }
+            };
+
+            if (window.matchMedia("(pointer: fine)").matches) {
+                card.addEventListener('mouseenter', () => { isHovering = true; updateBounds(); targetGlareOp = 1; cancelAnimationFrame(rafId); rafId = requestAnimationFrame(animate); });
+                card.addEventListener('mousemove', (e) => {
+                    if(!bounds) updateBounds();
+                    const leftX = e.clientX - bounds.x; const topY = e.clientY - bounds.y;
+                    targetX = ((leftX - bounds.width / 2) / (bounds.width / 2)) * 4; 
+                    targetY = ((topY - bounds.height / 2) / (bounds.height / 2)) * -4;
+                    targetGlareX = (leftX / bounds.width) * 100; targetGlareY = (topY / bounds.height) * 100;
+                });
+                card.addEventListener('mouseleave', () => { isHovering = false; targetX = 0; targetY = 0; targetGlareOp = 0; targetGlareX = 50; targetGlareY = 50; });
+                window.addEventListener('resize', updateBounds);
+            }
+
+            // View Switching
+            const viewLogin = document.getElementById('view-login');
+            const viewRegister = document.getElementById('view-register');
+            window.switchView = (targetView) => {
+                if (targetView === 'register') {
+                    viewLogin.classList.replace('form-active', 'form-hidden');
+                    viewRegister.classList.replace('form-hidden', 'form-active');
+                    card.style.height = '580px';
+                } else {
+                    viewRegister.classList.replace('form-active', 'form-hidden');
+                    viewLogin.classList.replace('form-hidden', 'form-active');
+                    card.style.height = '480px';
+                }
+            };
+
+            // REAL BACKEND INTEGRATION
+            const loginForm = document.querySelector('#view-login form');
+            const registerForm = document.querySelector('#view-register form');
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = loginForm.querySelector('input[type="email"]').value;
+                const password = loginForm.querySelector('input[type="password"]').value;
+                const btn = loginForm.querySelector('button[type="submit"]');
+                
+                btn.innerHTML = 'Signing in...'; btn.style.opacity = '0.7';
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/login', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        localStorage.setItem('vanguard_token', data.token); // Securely save token
+                        window.location.href = 'account.html'; 
+                    } else {
+                        alert(data.error); 
+                        btn.innerHTML = 'Sign In'; btn.style.opacity = '1';
+                    }
+                } catch (err) {
+                    alert('Server is down. Make sure Node.js is running!');
+                    btn.innerHTML = 'Sign In'; btn.style.opacity = '1';
+                }
+            });
+
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fullName = registerForm.querySelector('input[type="text"]').value;
+                const email = registerForm.querySelector('input[type="email"]').value;
+                const password = registerForm.querySelector('input[type="password"]').value;
+                const btn = registerForm.querySelector('button[type="submit"]');
+
+                btn.innerHTML = 'Creating Account...'; btn.style.opacity = '0.7';
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/register', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fullName, email, password })
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        localStorage.setItem('vanguard_token', data.token); // Securely save token
+                        window.location.href = 'account.html'; 
+                    } else {
+                        alert(data.error); 
+                        btn.innerHTML = 'Complete Registration'; btn.style.opacity = '1';
+                    }
+                } catch (err) {
+                    alert('Server is down. Make sure Node.js is running!');
+                    btn.innerHTML = 'Complete Registration'; btn.style.opacity = '1';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

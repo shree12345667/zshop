@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Products</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- High-End Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+        }
+        
+        .font-serif-italic {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 300;
+        }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+        
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item { transition: all 0.4s ease; }
+        .nav-item:hover {
+            background: rgba(0, 0, 0, 0.03);
+            border-left: 1px solid rgba(0, 0, 0, 0.3);
+            padding-left: 1.5rem;
+            color: black;
+        }
+        .nav-item.active {
+            background: rgba(0, 0, 0, 0.05);
+            border-left: 1px solid rgba(0, 0, 0, 0.8);
+            padding-left: 1.5rem;
+            color: black;
+        }
+
+        .premium-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            color: black;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 0;
+            transition: all 0.4s ease;
+        }
+        .premium-input:focus {
+            outline: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+        }
+        .premium-input::placeholder {
+            color: rgba(0, 0, 0, 0.4);
+            font-weight: 200;
+        }
+        select.premium-input option {
+            background: #fff;
+            color: #000;
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen w-screen overflow-hidden selection:bg-black selection:text-white relative text-xs">
+
+    <!-- Native Video Background -->
+    <video id="bg-video" autoplay loop muted playsinline src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4" class="absolute inset-0 w-full h-full object-cover -z-20"></video>
+    <div class="absolute inset-0 bg-black/10 -z-10"></div>
+
+    <div class="flex h-full w-full p-2 md:p-4 gap-4 relative z-10">
+        
+        <!-- Sidebar Navigation (6 Options Exactly) -->
+        <aside class="w-16 md:w-56 glass-panel flex flex-col transition-all duration-500 z-20">
+            <div class="h-24 flex items-center justify-center border-b border-black/5">
+                <span class="font-serif-italic text-3xl tracking-[0.05em] text-black hidden md:block">Admin</span>
+                <span class="font-serif-italic text-2xl tracking-widest text-black block md:hidden">A</span>
+            </div>
+            
+            <nav class="flex-1 py-8 flex flex-col gap-1 overflow-y-auto">
+                <a href="Admin-dashboard.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-chart-line w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Dashboard</span>
+                </a>
+                <a href="Admin-products.html" class="nav-item active w-full flex items-center py-3 px-4 text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-gem w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Products</span>
+                </a>
+                <a href="Admin-orders.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-box w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Orders</span>
+                </a>
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-users w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Customers</span>
+                </a>
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-chart-pie w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Analytics</span>
+                </a>
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-tag w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Discounts</span>
+                </a>
+            </nav>
+
+            <div class="border-t border-black/5 p-4">
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-sliders w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Settings</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 glass-panel overflow-y-auto relative p-8 md:p-12">
+            
+            <header class="mb-12 border-b border-black/5 pb-6 flex justify-between items-end">
+                <div>
+                    <p class="text-[9px] uppercase tracking-[0.3em] text-gray-500 mb-2">Collection Management</p>
+                    <h1 class="font-serif-italic text-3xl md:text-4xl text-black tracking-[0.05em]">Products</h1>
+                </div>
+                <button onclick="openProductModal()" class="text-[9px] uppercase tracking-[0.2em] border border-black/20 px-8 py-3 hover:bg-black hover:text-white transition-all duration-500 tracking-widest bg-white/20">
+                    + Add Item
+                </button>
+            </header>
+            
+            <!-- Products Grid Container -->
+            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-12">
+                <!-- Data loaded from Python Backend will appear here -->
+                <div class="col-span-full flex justify-center py-20">
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500">Connecting to Server...</p>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="product-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-white/30 backdrop-blur-md" onclick="closeProductModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="glass-panel w-full max-w-3xl m-4 p-10 relative z-10 max-h-[90vh] overflow-y-auto shadow-2xl">
+            
+            <div class="flex justify-between items-center mb-10 border-b border-black/5 pb-6">
+                <div>
+                    <p class="text-[8px] uppercase tracking-[0.4em] text-gray-500 mb-1">Catalog Entry</p>
+                    <h2 id="modal-title" class="font-serif-italic text-3xl text-black tracking-[0.05em]">New Product</h2>
+                </div>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-black transition-all">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="product-form" onsubmit="saveProduct(event)">
+                <input type="hidden" id="prod-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 mb-8">
+                    <!-- Brand -->
+                    <div>
+                        <label class="block text-[9px] text-gray-500 mb-2 tracking-[0.3em] uppercase">Brand / Designer</label>
+                        <input type="text" id="prod-brand" required class="premium-input w-full" placeholder="e.g. Arc'teryx">
+                    </div>
+                    <!-- Name -->
+                    <div>
+                        <label class="block text-[9px] text-gray-500 mb-2 tracking-[0.3em] uppercase">Item Name</label>
+                        <input type="text" id="prod-name" required class="premium-input w-full" placeholder="e.g. Technical Shell Jacket">
+                    </div>
+                    
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-[9px] text-gray-500 mb-2 tracking-[0.3em] uppercase">Category</label>
+                        <select id="prod-category" required class="premium-input w-full bg-transparent">
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="Fashion">Fashion & Apparel</option>
+                            <option value="Tech">Technology & Electronics</option>
+                            <option value="Beauty">Beauty & Cosmetics</option>
+                            <option value="Home">Home & Decor</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </div>
+                    <!-- Price -->
+                    <div>
+                        <label class="block text-[9px] text-gray-500 mb-2 tracking-[0.3em] uppercase">Price (USD)</label>
+                        <input type="number" step="0.01" id="prod-price" required class="premium-input w-full" placeholder="0.00">
+                    </div>
+
+                    <!-- Size / Detail -->
+                    <div>
+                        <label class="block text-[9px] text-gray-500 mb-2 tracking-[0.3em] uppercase">Size / Detail / Variant</label>
+                        <input type="text" id="prod-size" class="premium-input w-full" placeholder="e.g. Onyx Black, or 30ml">
+                    </div>
+                    <!-- Warranty -->
+                    <div>
+                        <label class="block text-[9px] text-gray-500 mb-2 tracking-[0.3em] uppercase">Warranty Info</label>
+                        <input type="text" id="prod-warranty" class="premium-input w-full" placeholder="e.g. 1 Year Warranty">
+                    </div>
+
+                    <!-- Payment Options -->
+                    <div class="md:col-span-2">
+                        <label class="block text-[9px] text-gray-500 mb-2 tracking-[0.3em] uppercase">Accepted Payment Methods</label>
+                        <select id="prod-payment" required class="premium-input w-full bg-transparent">
+                            <option value="All">All Methods (Online & Cash on Delivery)</option>
+                            <option value="Online Only">Online Payment Only (Cards, UPI, Wallets)</option>
+                            <option value="COD Only">Cash on Delivery Only</option>
+                        </select>
+                    </div>
+
+                    <!-- Image Asset -->
+                    <div class="md:col-span-2">
+                        <label class="block text-[9px] text-gray-500 mb-2 tracking-[0.3em] uppercase">Asset Image URL</label>
+                        <input type="url" id="prod-image" required class="premium-input w-full" placeholder="https://res.cloudinary.com/...">
+                        <p class="text-[8px] tracking-wider text-gray-400 mt-2">* Paste a direct image link.</p>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="md:col-span-2">
+                        <label class="block text-[9px] text-gray-500 mb-2 tracking-[0.3em] uppercase">Detailed Description</label>
+                        <textarea id="prod-desc" required rows="3" class="premium-input w-full resize-none" placeholder="Elaborate on the product..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-6 border-t border-black/5 pt-8">
+                    <button type="button" onclick="closeProductModal()" class="text-[9px] text-gray-500 hover:text-black uppercase tracking-[0.2em] transition-all">Cancel</button>
+                    <button id="submit-btn" type="submit" class="text-[9px] bg-black text-white px-10 py-4 uppercase tracking-[0.2em] hover:bg-gray-800 transition-all shadow-lg">Save to Database</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:5000/api/products';
+        let products = []; // Local cache to handle editing quickly
+
+        // LocalStorage Helpers for Dual-Sync
+        function getLocalProducts() {
+            return JSON.parse(localStorage.getItem('store_products')) || [];
+        }
+
+        function setLocalProducts(prods) {
+            localStorage.setItem('store_products', JSON.stringify(prods));
+        }
+
+        // FETCH DATA FROM PYTHON BACKEND (WITH FALLBACK)
+        async function fetchProducts() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                // Ensure we grab the array depending on backend response format
+                products = data.products ? data.products : (Array.isArray(data) ? data : []);
+                setLocalProducts(products); // Sync fetched data to local storage
+                renderProducts();
+            } catch (error) {
+                console.warn("Backend server offline. Loading from localStorage fallback.", error);
+                // Fallback to local storage
+                products = getLocalProducts();
+                renderProducts();
+            }
+        }
+
+        // RENDER PRODUCTS IN THE UI
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+            
+            if(products.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-32 border border-black/5 bg-white/5">
+                        <i class="fa-solid fa-box-open text-3xl text-gray-300 mb-4"></i>
+                        <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500">The catalog is empty.</p>
+                    </div>`;
+                return;
+            }
+
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "group relative flex flex-col bg-white/20 border border-black/5 p-3 hover:bg-white/40 transition-all duration-700 shadow-sm hover:shadow-xl";
+                
+                // Safe Image Access
+                const imgSrc = p.image_url || p.image || 'https://placehold.co/400x500/eaeaea/999999?text=Image+Missing';
+                
+                // Handle payment checks properly whether it's stored as 'payment' or 'payment_types'
+                const payValue = p.payment_types || p.payment || 'All';
+
+                // Formatting the Payment tags
+                let paymentTag = '';
+                if(payValue === 'All') paymentTag = '<span class="px-2 py-1 bg-black text-white text-[7px] uppercase tracking-widest">All Payments</span>';
+                else if(payValue === 'Online Only') paymentTag = '<span class="px-2 py-1 bg-blue-600 text-white text-[7px] uppercase tracking-widest">Online Only</span>';
+                else if(payValue === 'COD Only') paymentTag = '<span class="px-2 py-1 bg-green-700 text-white text-[7px] uppercase tracking-widest">COD Only</span>';
+
+                card.innerHTML = `
+                    <div class="aspect-[4/5] w-full overflow-hidden relative mb-4 bg-black/5 flex items-center justify-center">
+                        <img src="${imgSrc}" onerror="this.src='https://placehold.co/400x500/eaeaea/999999?text=Image+Missing'" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
+                        
+                        <div class="absolute top-3 left-3 flex flex-col gap-1 items-start">
+                            <span class="px-2 py-1 bg-white text-black text-[7px] uppercase tracking-widest border border-black/10">${p.category || 'Uncategorized'}</span>
+                            ${paymentTag}
+                        </div>
+                        
+                        <div class="absolute inset-0 bg-white/50 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-3 backdrop-blur-sm">
+                            <button onclick="editProduct('${p.id}')" class="w-3/4 py-3 bg-black text-white uppercase tracking-[0.2em] text-[8px] hover:bg-gray-800 transition-all">Edit Item</button>
+                            <button onclick="deleteProduct('${p.id}')" class="w-3/4 py-3 bg-red-900 text-white uppercase tracking-[0.2em] text-[8px] hover:bg-red-950 transition-all">Delete</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 flex flex-col px-1 pb-2">
+                        <p class="text-[8px] text-gray-500 uppercase tracking-[0.3em] mb-1">${p.brand || 'No Brand'}</p>
+                        <h3 class="font-serif-italic text-xl text-black tracking-wider mb-2 leading-tight">${p.name || 'Unnamed Item'}</h3>
+                        <p class="text-[12px] text-black tracking-widest mb-3 border-b border-black/5 pb-3">$${parseFloat(p.price || 0).toFixed(2)}</p>
+                        
+                        <div class="grid grid-cols-2 gap-2 mt-auto">
+                            <div>
+                                <p class="text-[7px] text-gray-400 uppercase tracking-widest mb-0.5">Detail/Size</p>
+                                <p class="text-[9px] text-black truncate">${p.size || 'Standard'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[7px] text-gray-400 uppercase tracking-widest mb-0.5">Warranty</p>
+                                <p class="text-[9px] text-black truncate">${p.warranty || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        const modal = document.getElementById('product-modal');
+
+        function openProductModal(isEdit = false) {
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
+            
+            document.getElementById('modal-title').innerText = isEdit ? "Modify Entry" : "New Entry";
+            if(!isEdit) {
+                document.getElementById('product-form').reset();
+                document.getElementById('prod-id').value = '';
+                document.getElementById('prod-category').value = '';
+                document.getElementById('prod-payment').value = 'All';
+            }
+        }
+
+        function closeProductModal() {
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('product-form').reset();
+                document.getElementById('prod-id').value = '';
+            }, 300); 
+        }
+
+        // FIXED: Actually populate the input fields when editing!
+        function editProduct(id) {
+            const p = products.find(prod => prod.id == id);
+            if (!p) return;
+
+            document.getElementById('prod-id').value = p.id;
+            document.getElementById('prod-name').value = p.name || '';
+            document.getElementById('prod-brand').value = p.brand || '';
+            document.getElementById('prod-price').value = p.price || '';
+            
+            const catSelect = document.getElementById('prod-category');
+            if (p.category) catSelect.value = p.category;
+            
+            const paySelect = document.getElementById('prod-payment');
+            if (p.payment_types || p.payment) paySelect.value = p.payment_types || p.payment;
+
+            document.getElementById('prod-size').value = p.size || '';
+            document.getElementById('prod-warranty').value = p.warranty || '';
+            document.getElementById('prod-image').value = p.image_url || p.image || '';
+            document.getElementById('prod-desc').value = p.description || '';
+
+            openProductModal(true);
+        }
+
+        async function saveProduct(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.innerText = "SAVING...";
+            
+            const prodId = document.getElementById('prod-id').value;
+            // Create a robust product object containing both sets of keys just in case
+            const newProduct = { 
+                id: prodId || 'prod_' + Date.now(),
+                name: document.getElementById('prod-name').value,
+                brand: document.getElementById('prod-brand').value,
+                category: document.getElementById('prod-category').value,
+                price: parseFloat(document.getElementById('prod-price').value),
+                size: document.getElementById('prod-size').value,
+                warranty: document.getElementById('prod-warranty').value,
+                payment: document.getElementById('prod-payment').value,
+                payment_types: document.getElementById('prod-payment').value,
+                image: document.getElementById('prod-image').value,
+                image_url: document.getElementById('prod-image').value,
+                description: document.getElementById('prod-desc').value
+            };
+
+            try {
+                let response;
+                // If it's a real backend ID (a number, not 'prod_...'), send a PUT request
+                if (prodId && !prodId.toString().startsWith('prod_')) {
+                    response = await fetch(`${API_URL}/${prodId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newProduct)
+                    });
+                } else {
+                    response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newProduct)
+                    });
+                }
+                
+                if(response.ok) {
+                    await fetchProducts(); // Reload from backend on success
+                } else {
+                    throw new Error("Backend save failed");
+                }
+            } catch (err) {
+                console.warn("Saving to LocalStorage fallback due to backend error.", err);
+                
+                // DUAL SYNC: If backend fails, manually update local storage
+                let localProds = getLocalProducts();
+                const existingIndex = localProds.findIndex(p => p.id == prodId);
+                if (existingIndex >= 0) {
+                    localProds[existingIndex] = newProduct;
+                } else {
+                    localProds.unshift(newProduct);
+                }
+                
+                setLocalProducts(localProds);
+                products = localProds;
+                renderProducts(); // Refresh the grid manually
+            } finally {
+                submitBtn.innerText = "Save to Database";
+                closeProductModal();
+            }
+        }
+
+        async function deleteProduct(id) {
+            if(confirm("Confirm removal of this item from the catalog? This action cannot be undone.")) {
+                try {
+                    const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                    if(response.ok) {
+                        await fetchProducts(); // Refresh the grid from backend
+                    } else {
+                        throw new Error("Backend delete failed");
+                    }
+                } catch(err) {
+                    console.warn("Deleting from LocalStorage fallback due to backend error.", err);
+                    
+                    // DUAL SYNC: Delete manually from local storage
+                    let localProds = getLocalProducts();
+                    localProds = localProds.filter(p => p.id != id);
+                    
+                    setLocalProducts(localProds);
+                    products = localProds;
+                    renderProducts();
+                }
+            }
+        }
+
+        // Initialize: Fetch data on load
+        fetchProducts();
+
+    </script>
+</body>
+</html>

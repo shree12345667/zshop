@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Discounts & Promotions</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- High-End Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+        }
+        
+        .font-serif-italic {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 300;
+        }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+        
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item { transition: all 0.4s ease; }
+        .nav-item:hover {
+            background: rgba(0, 0, 0, 0.03);
+            border-left: 1px solid rgba(0, 0, 0, 0.3);
+            padding-left: 1.5rem;
+            color: black;
+        }
+        .nav-item.active {
+            background: rgba(0, 0, 0, 0.05);
+            border-left: 1px solid rgba(0, 0, 0, 0.8);
+            padding-left: 1.5rem;
+            color: black;
+        }
+
+        .premium-input {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: black;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .premium-input:focus {
+            outline: none;
+            background: #fff;
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+        .discount-card { transition: all 0.4s ease; }
+        .discount-card:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+        }
+        
+        /* Toast Notification */
+        .toast { position: fixed; top: 20px; left: 50%; transform: translate(-50%, -20px); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 9999; }
+        .toast.show { transform: translate(-50%, 0); opacity: 1; }
+    </style>
+</head>
+<body class="text-gray-800 h-screen w-screen overflow-hidden selection:bg-black selection:text-white relative text-xs">
+
+    <!-- GLOBAL TOAST NOTIFICATION -->
+    <div id="action-toast" class="toast glass-panel bg-white/95 px-6 py-3 rounded-full shadow-2xl border-white flex items-center gap-3">
+        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white shadow-md">
+            <i class="fa-solid fa-check text-[10px]"></i>
+        </div>
+        <span class="text-[14px] font-bold text-gray-900" id="toast-message">Success!</span>
+    </div>
+
+    <!-- Native Video Background -->
+    <video id="bg-video" autoplay loop muted playsinline src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4" class="absolute inset-0 w-full h-full object-cover -z-20"></video>
+    <div class="absolute inset-0 bg-black/10 -z-10"></div>
+
+    <div class="flex h-full w-full p-2 md:p-4 gap-4 relative z-10">
+        
+        <!-- Sidebar -->
+        <aside class="w-16 md:w-56 glass-panel flex flex-col transition-all duration-500 z-20">
+            <div class="h-24 flex items-center justify-center border-b border-black/5">
+                <span class="font-serif-italic text-2xl tracking-[0.1em] text-black hidden md:block">Admin</span>
+                <span class="font-serif-italic text-2xl tracking-widest text-black block md:hidden">A</span>
+            </div>
+            
+            <nav class="flex-1 py-8 flex flex-col gap-1 overflow-y-auto">
+                <a href="Admin-dashboard.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-chart-line w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Dashboard</span>
+                </a>
+                <a href="Admin-products.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-gem w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Products</span>
+                </a>
+                <a href="Admin-orders.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-box w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Orders</span>
+                </a>
+                <a href="Customers-info.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-users w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Customers</span>
+                </a>
+                <a href="Analytics.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-chart-pie w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Analytics</span>
+                </a>
+                <!-- Discounts Tab is Active -->
+                <a href="discounts.html" class="nav-item active w-full flex items-center py-3 px-4 text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-tag w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Discounts</span>
+                </a>
+            </nav>
+
+            <div class="border-t border-black/5 p-4">
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-sliders w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Settings</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 glass-panel overflow-y-auto relative p-8 md:p-12">
+            
+            <header class="mb-10 border-b border-black/5 pb-6 flex justify-between items-end">
+                <div>
+                    <p class="text-[9px] uppercase tracking-[0.3em] text-gray-500 mb-2">Promotions & Pricing</p>
+                    <h1 class="font-serif-italic text-3xl md:text-4xl text-black tracking-[0.1em]">Discounts</h1>
+                </div>
+            </header>
+            
+            <!-- TOP SECTION: Global Promo Codes -->
+            <div class="glass-panel bg-white/30 border border-white/60 p-6 md:p-8 rounded-3xl shadow-sm mb-10">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6 border-b border-black/5 pb-6">
+                    <div>
+                        <h2 class="text-[18px] font-bold text-gray-900 tracking-wide mb-1"><i class="fa-solid fa-ticket mr-2 text-[#D4AF37]"></i>Global Promo Codes</h2>
+                        <p class="text-[11px] text-gray-600 font-medium">Manage sitewide checkout codes for your customers.</p>
+                    </div>
+                    
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <input type="text" id="new-promo-code" placeholder="CODE (e.g. WINTER50)" class="premium-input w-full md:w-40 uppercase">
+                        <input type="number" id="new-promo-pct" placeholder="% Off" class="premium-input w-full md:w-24">
+                        <button onclick="addPromoCode()" class="bg-[#0F172A] text-white px-6 py-2 rounded-lg font-bold hover:bg-black transition-all shadow-md text-[11px] tracking-wider uppercase">Add</button>
+                    </div>
+                </div>
+
+                <div id="promo-list-container" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Default Active Promos -->
+                    <div class="bg-white/60 border border-white p-4 rounded-xl shadow-sm flex justify-between items-center relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+                        <div>
+                            <p class="font-bold text-[14px] text-gray-900 tracking-widest">ZSHOP20</p>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">20% OFF</p>
+                        </div>
+                        <button class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    
+                    <div class="bg-white/60 border border-white p-4 rounded-xl shadow-sm flex justify-between items-center relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+                        <div>
+                            <p class="font-bold text-[14px] text-gray-900 tracking-widest">SUMMER10</p>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">10% OFF</p>
+                        </div>
+                        <button class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM SECTION: Product Pricing Manager -->
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-[18px] font-bold text-gray-900 tracking-wide"><i class="fa-solid fa-tags mr-2 text-[#D4AF37]"></i>Individual Product Pricing</h2>
+                <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold bg-white/40 px-3 py-1.5 rounded-full border border-white"><span id="prod-count">0</span> Items Loaded</span>
+            </div>
+
+            <div id="admin-pricing-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
+                <!-- Products dynamically loaded here from Python DB -->
+                <div class="col-span-full text-center py-10">
+                    <p class="text-[10px] uppercase tracking-widest text-gray-500">Fetching catalog from database...</p>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- API Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const API_URL = 'http://127.0.0.1:5000/api/products';
+            let globalProducts = [];
+
+            // Fetch Products from Backend
+            async function fetchPricingData() {
+                const container = document.getElementById('admin-pricing-container');
+                
+                try {
+                    const response = await fetch(API_URL, { mode: 'cors' });
+                    if (!response.ok) throw new Error("DB Connection Failed");
+                    const data = await response.json();
+                    
+                    globalProducts = data.products ? data.products : (Array.isArray(data) ? data : []);
+                    document.getElementById('prod-count').innerText = globalProducts.length;
+                    
+                    renderPricingGrid();
+                } catch(err) {
+                    console.warn("Backend offline. Cannot fetch products for pricing.", err);
+                    container.innerHTML = `
+                        <div class="col-span-full flex flex-col items-center justify-center py-20 border border-dashed border-red-300 rounded-2xl bg-red-50/50">
+                            <i class="fa-solid fa-server text-3xl text-red-400 mb-4"></i>
+                            <p class="text-[14px] font-bold text-gray-900 mb-1">Database Disconnected</p>
+                            <p class="text-[11px] text-gray-500 tracking-wide">Please ensure your Python backend is running on port 5000.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            // Render Products with Pricing Tools
+            function renderPricingGrid() {
+                const container = document.getElementById('admin-pricing-container');
+                container.innerHTML = '';
+
+                if (globalProducts.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-16 text-gray-500 uppercase tracking-widest text-[10px] font-bold">
+                            No products found in the database.
+                        </div>
+                    `;
+                    return;
+                }
+
+                globalProducts.forEach((p, index) => {
+                    const price = parseFloat(p.price || 0).toFixed(2);
+                    const imgSrc = p.image_url || p.image || 'https://placehold.co/400x500/eaeaea/999999?text=No+Image';
+                    
+                    const card = `
+                        <div class="discount-card glass-panel bg-white/40 p-5 rounded-2xl border border-white flex flex-col justify-between">
+                            
+                            <!-- Product Info Header -->
+                            <div class="flex gap-4 mb-5 border-b border-black/5 pb-4">
+                                <img src="${imgSrc}" class="w-16 h-16 rounded-xl object-cover mix-blend-multiply bg-gray-100 border border-gray-200">
+                                <div class="flex-1">
+                                    <p class="text-[9px] uppercase tracking-widest text-gray-500 font-bold mb-0.5">${p.category || 'Uncategorized'}</p>
+                                    <h3 class="text-[13px] font-bold text-gray-900 leading-tight mb-1 line-clamp-2" title="${p.name}">${p.name}</h3>
+                                    <p class="text-[14px] font-bold text-[#D4AF37]">Current: $${price}</p>
+                                </div>
+                            </div>
+
+                            <!-- Quick Action Offers -->
+                            <div class="mb-4">
+                                <p class="text-[9px] uppercase tracking-widest text-gray-500 font-bold mb-2">Apply Quick Offer</p>
+                                <div class="flex gap-2">
+                                    <button onclick="calculateDiscount(${index}, 0.10)" class="flex-1 bg-white border border-gray-200 hover:border-gray-400 text-gray-700 text-[10px] font-bold py-1.5 rounded-lg transition-colors">-10%</button>
+                                    <button onclick="calculateDiscount(${index}, 0.20)" class="flex-1 bg-white border border-gray-200 hover:border-gray-400 text-gray-700 text-[10px] font-bold py-1.5 rounded-lg transition-colors">-20%</button>
+                                    <button onclick="calculateDiscount(${index}, 0.50)" class="flex-1 bg-red-50 border border-red-200 hover:bg-red-100 text-red-700 text-[10px] font-bold py-1.5 rounded-lg transition-colors">-50%</button>
+                                </div>
+                            </div>
+
+                            <!-- Manual Price Input & Update -->
+                            <div class="flex items-center gap-2 mt-auto">
+                                <div class="relative flex-1">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
+                                    <input type="number" id="price-input-${index}" value="${price}" step="0.01" class="premium-input w-full pl-7 py-2.5 text-[14px] font-bold">
+                                </div>
+                                <button onclick="saveNewPrice(${index}, '${p.id}')" id="btn-save-${index}" class="bg-[#0F172A] text-white px-5 py-2.5 rounded-lg font-bold text-[11px] tracking-wider uppercase hover:bg-black transition-all shadow-md">
+                                    Update
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', card);
+                });
+            }
+
+            // --- Functionality ---
+
+            // Automatically calculate the price in the input box when clicking a quick offer
+            window.calculateDiscount = (index, percentOff) => {
+                const product = globalProducts[index];
+                const currentPrice = parseFloat(product.price || 0);
+                const newPrice = currentPrice - (currentPrice * percentOff);
+                
+                // Update the input field visually
+                const inputEl = document.getElementById(`price-input-${index}`);
+                inputEl.value = newPrice.toFixed(2);
+                
+                // Highlight input to show it changed
+                inputEl.classList.add('bg-green-50', 'border-green-300');
+                setTimeout(() => inputEl.classList.remove('bg-green-50', 'border-green-300'), 1000);
+            };
+
+            // Send PUT request to Python backend to actually update the price
+            window.saveNewPrice = async (index, productId) => {
+                const btn = document.getElementById(`btn-save-${index}`);
+                const newPriceVal = document.getElementById(`price-input-${index}`).value;
+                
+                if(!newPriceVal || parseFloat(newPriceVal) < 0) {
+                    alert("Please enter a valid price."); return;
+                }
+
+                // UI Loading state
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+                btn.classList.add('opacity-70', 'pointer-events-none');
+
+                // Get original product object and modify just the price
+                const originalProduct = globalProducts[index];
+                const updatedProduct = {
+                    ...originalProduct,
+                    price: parseFloat(newPriceVal)
+                };
+
+                try {
+                    const response = await fetch(`${API_URL}/${productId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedProduct)
+                    });
+
+                    if(!response.ok) throw new Error("Update Failed");
+
+                    // Success UI Feedback
+                    btn.innerHTML = `Saved ✓`;
+                    btn.classList.replace('bg-[#0F172A]', 'bg-green-600');
+                    
+                    showToast(`Price updated to $${parseFloat(newPriceVal).toFixed(2)}`);
+
+                    // Reset button and update local array safely
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.classList.replace('bg-green-600', 'bg-[#0F172A]');
+                        btn.classList.remove('opacity-70', 'pointer-events-none');
+                        
+                        // Update UI without full refresh to feel instantaneous
+                        globalProducts[index].price = parseFloat(newPriceVal);
+                        renderPricingGrid();
+                    }, 1500);
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Failed to update database. Is Python running?");
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('opacity-70', 'pointer-events-none');
+                }
+            };
+
+            // Basic Promo Code UI addition logic
+            window.addPromoCode = () => {
+                const codeInput = document.getElementById('new-promo-code');
+                const pctInput = document.getElementById('new-promo-pct');
+                
+                const code = codeInput.value.trim().toUpperCase();
+                const pct = parseInt(pctInput.value);
+
+                if(!code || !pct || pct <= 0 || pct > 100) {
+                    alert("Please enter a valid Promo Code and Percentage (1-100).");
+                    return;
+                }
+
+                const container = document.getElementById('promo-list-container');
+                const promoHtml = `
+                    <div class="bg-white/60 border border-white p-4 rounded-xl shadow-sm flex justify-between items-center relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#D4AF37]"></div>
+                        <div>
+                            <p class="font-bold text-[14px] text-gray-900 tracking-widest">${code}</p>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">${pct}% OFF</p>
+                        </div>
+                        <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+
+                container.insertAdjacentHTML('beforeend', promoHtml);
+                
+                // Clear inputs
+                codeInput.value = '';
+                pctInput.value = '';
+                showToast(`Promo Code ${code} added!`);
+            };
+
+            // Custom Toast Function
+            function showToast(message) {
+                const toast = document.getElementById('action-toast');
+                document.getElementById('toast-message').textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+            }
+
+            // Init fetch on load
+            fetchPricingData();
+        });
+    </script>
+</body>
+</html>

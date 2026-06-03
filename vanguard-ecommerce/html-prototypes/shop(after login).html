@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop & Secure Checkout | Zshop</title>
+    
+    <!-- Tailwind CSS Integration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 
+                            orange: '#D4AF37', 
+                            light: '#F8F9FA', 
+                            dark: '#0F172A', 
+                            gray: '#8E98A8' 
+                        }
+                    },
+                    transitionTimingFunction: { 
+                        'smooth': 'cubic-bezier(0.25, 0.1, 0.25, 1)' 
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #F8F9FA; 
+            -webkit-font-smoothing: antialiased; 
+            overflow-x: hidden; 
+        }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.2); border-radius: 10px; }
+
+        /* Premium Glass Utilities */
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px); 
+            border: 1px solid rgba(255, 255, 255, 0.9); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03); 
+        }
+        
+        /* Product Cards */
+        .solid-card { 
+            background: #ffffff; 
+            border: 1px solid rgba(0, 0, 0, 0.05); 
+            border-radius: 1rem; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        }
+        .solid-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08); 
+        }
+        
+        /* Inputs */
+        .flat-input { 
+            background: rgba(255, 255, 255, 0.8); 
+            border: 1px solid rgba(255, 255, 255, 0.9); 
+            transition: all 0.3s ease; 
+        }
+        .flat-input:hover { 
+            background: #ffffff; 
+            border-color: #e2e8f0; 
+        }
+        .flat-input:focus { 
+            background: #ffffff; 
+            border-color: rgba(15, 23, 42, 0.4); 
+            outline: none; 
+            box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05); 
+        }
+        
+        /* Video Background Constraints */
+        .video-bg-container { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            overflow: hidden; 
+            pointer-events: none; 
+            z-index: -1; 
+        }
+        .video-bg-container video { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            min-width: 100%; 
+            min-height: 100%; 
+            width: auto; 
+            height: auto; 
+            object-fit: cover; 
+        }
+        .video-overlay { 
+            position: absolute; 
+            inset: 0; 
+            z-index: 1; 
+            background: rgba(255, 255, 255, 0.2); 
+        }
+
+        /* Overlays & Panels */
+        .overlay { 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 400ms ease; 
+        }
+        .overlay.active { 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
+        .slide-panel { 
+            transform: translateX(100%); 
+            transition: transform 500ms cubic-bezier(0.25, 0.1, 0.25, 1); 
+        }
+        .slide-panel.open { 
+            transform: translateX(0); 
+        }
+
+        /* Checkbox Customization */
+        .custom-checkbox { 
+            appearance: none; 
+            width: 18px; 
+            height: 18px; 
+            border: 1.5px solid #cbd5e1; 
+            border-radius: 4px; 
+            background-color: #fff; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            position: relative; 
+        }
+        .custom-checkbox:checked { 
+            background-color: #0F172A; 
+            border-color: #0F172A; 
+        }
+        .custom-checkbox:checked::after { 
+            content: ''; 
+            position: absolute; 
+            left: 5px; 
+            top: 2px; 
+            width: 5px; 
+            height: 10px; 
+            border: solid white; 
+            border-width: 0 2px 2px 0; 
+            transform: rotate(45deg); 
+        }
+        
+        /* Toast Notification */
+        .toast { 
+            position: fixed; 
+            top: 20px; 
+            left: 50%; 
+            transform: translate(-50%, -20px); 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1); 
+            z-index: 9999; 
+        }
+        .toast.show { 
+            transform: translate(-50%, 0); 
+            opacity: 1; 
+        }
+        
+        .product-item.hidden-item { 
+            display: none; 
+        }
+        .zshop-logo { 
+            filter: brightness(0); 
+            transition: transform 0.3s ease; 
+        }
+        .zshop-logo:hover { 
+            transform: scale(1.05); 
+        }
+
+        .checkout-step { 
+            transition: opacity 0.4s ease, transform 0.4s ease; 
+        }
+        .checkout-step.hidden-step { 
+            display: none; 
+            opacity: 0; 
+            transform: translateY(10px); 
+        }
+    </style>
+</head>
+<body class="text-brand-dark min-h-screen flex flex-col relative overflow-x-hidden">
+
+    <!-- GLOBAL TOAST NOTIFICATION -->
+    <div id="cart-toast" class="toast glass-panel bg-white/95 px-6 py-3 rounded-full shadow-2xl border-white flex items-center gap-3">
+        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white shadow-md">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M20 6L9 17l-5-5"/>
+            </svg>
+        </div>
+        <span class="text-[14px] font-bold text-gray-900">Item added to your cart securely.</span>
+    </div>
+
+    <!-- BACKGROUNDS -->
+    <div id="shop-bg" class="video-bg-container">
+        <video autoplay muted loop playsinline preload="auto">
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260424_064411_9e9d7f84-9277-41f4-ab10-59172d89e6be.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+    
+    <div id="checkout-bg" class="video-bg-container hidden">
+        <video autoplay muted loop playsinline preload="auto">
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260423_161253_c72b1869-400f-45ed-ac0c-52f68c2ed5bd.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay bg-black/10"></div>
+    </div>
+
+    <!-- =========================================================================================
+         VIEW 1: EXTENSIVE SHOP CATALOG 
+    ========================================================================================== -->
+    <div id="view-shop" class="w-full flex flex-col min-h-screen">
+        
+        <!-- Navigation -->
+        <nav class="fixed top-0 inset-x-0 z-40 pt-4 px-4 sm:pt-6 sm:px-6 flex justify-center">
+            <div class="glass-panel bg-white/70 rounded-full p-2.5 flex items-center justify-between w-full max-w-[1600px] shadow-sm">
+                
+                <div class="flex items-center gap-8 pl-4">
+                    <a href="index.html" class="flex items-center cursor-pointer">
+                        <img src="https://res.cloudinary.com/ds93qby5a/image/upload/v1780223632/Screenshot_2026-05-31_152011-Photoroom_1_s9tty1.png" alt="Zshop Logo" class="h-6 zshop-logo object-contain" />
+                    </a>
+                    <div class="hidden md:flex items-center gap-7">
+                        <button class="text-[13px] font-bold text-black border-b-2 border-black pb-0.5">Shop All</button>
+                        <button class="text-[13px] font-medium text-gray-700 hover:text-black transition-colors">Mens</button>
+                        <button class="text-[13px] font-medium text-gray-700 hover:text-black transition-colors">Womens</button>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center gap-2">
+                    <button class="flex items-center gap-2 bg-white hover:bg-gray-50 rounded-full pl-2 pr-4 py-1.5 transition-colors border border-gray-200 shadow-sm" onclick="window.location.href='account.html'">
+                        <div class="user-initials w-7 h-7 rounded-full bg-brand-orange text-white flex items-center justify-center text-[11px] font-bold">...</div>
+                        <span class="user-full-name text-[13px] font-medium text-gray-900">Account</span>
+                    </button>
+                    <button class="cart-toggle-btn flex items-center bg-brand-dark text-white rounded-full pl-5 pr-1.5 py-1.5 ml-2 border border-brand-dark hover:bg-black transition-all shadow-md active:scale-95">
+                        <span class="nav-cart-total text-[13px] font-medium mr-3">Cart (0)</span>
+                        <div class="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                                <path d="M3 6h18"/>
+                                <path d="M16 10a4 4 0 0 1-8 0"/>
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="flex md:hidden items-center gap-2 pr-1">
+                    <button class="cart-toggle-btn w-8 h-8 flex items-center justify-center bg-brand-dark text-white rounded-full shadow-md">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                            <path d="M3 6h18"/>
+                            <path d="M16 10a4 4 0 0 1-8 0"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Shop Header -->
+        <header class="pt-32 sm:pt-40 pb-8 px-5 sm:px-8 lg:px-12 max-w-[1600px] mx-auto w-full relative z-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div class="glass-panel bg-white/80 p-6 sm:p-8 rounded-3xl max-w-2xl shadow-sm">
+                    <h1 class="text-[32px] sm:text-[40px] font-bold tracking-tight text-brand-dark mb-3">Shop All Collection</h1>
+                    <p class="text-[14px] text-gray-800 leading-relaxed font-medium">Explore our complete range of meticulously crafted essentials. Designed for durability, sustainability, and effortless everyday style.</p>
+                </div>
+                
+                <!-- Sort By Dropdown -->
+                <div class="hidden md:flex items-center bg-[#E5EEF6]/90 backdrop-blur-md px-5 py-3 rounded-full border border-white/60 shadow-sm">
+                    <span class="text-[12px] font-bold text-gray-600 uppercase tracking-widest mr-3">Sort By:</span>
+                    <select id="desktop-sort" class="bg-transparent text-[14px] font-bold text-gray-900 outline-none cursor-pointer appearance-none min-w-[120px]">
+                        <option value="featured">Featured</option>
+                        <option value="newest">Newest Arrivals</option>
+                        <option value="low">Price: Low to High</option>
+                        <option value="high">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 px-5 sm:px-8 lg:px-12 max-w-[1600px] mx-auto w-full pb-20 relative z-10">
+            <div class="flex flex-col lg:flex-row gap-10">
+                
+                <!-- Filters Sidebar -->
+                <aside class="hidden lg:block w-64 shrink-0">
+                    <div class="bg-white/95 backdrop-blur-xl p-8 rounded-[2rem] sticky top-32 shadow-xl border border-white">
+                        <h2 class="text-[18px] font-bold text-gray-900 mb-8">Filters</h2>
+                        
+                        <!-- Categories -->
+                        <div class="mb-8">
+                            <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Category</h3>
+                            <div class="space-y-4 flex flex-col">
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" value="all" class="filter-category custom-checkbox" checked>
+                                    <span class="text-[14px] text-gray-800 font-semibold">All Products</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" value="fashion" class="filter-category custom-checkbox">
+                                    <span class="text-[14px] text-gray-700 font-medium group-hover:text-black">Fashion</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" value="tech" class="filter-category custom-checkbox">
+                                    <span class="text-[14px] text-gray-700 font-medium group-hover:text-black">Tech & Electronics</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" value="beauty" class="filter-category custom-checkbox">
+                                    <span class="text-[14px] text-gray-700 font-medium group-hover:text-black">Beauty</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" value="home" class="filter-category custom-checkbox">
+                                    <span class="text-[14px] text-gray-700 font-medium group-hover:text-black">Home & Furniture</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" value="accessories" class="filter-category custom-checkbox">
+                                    <span class="text-[14px] text-gray-700 font-medium group-hover:text-black">Accessories</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" value="wellness" class="filter-category custom-checkbox">
+                                    <span class="text-[14px] text-gray-700 font-medium group-hover:text-black">Wellness</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="h-px bg-gray-200/60 my-6 w-full"></div>
+
+                        <!-- Price Ranges -->
+                        <div class="mb-2">
+                            <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Price</h3>
+                            <div class="space-y-4 flex flex-col">
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="custom-checkbox filter-price" value="under-50">
+                                    <span class="text-[14px] text-gray-700 font-medium group-hover:text-black">Under $50</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="custom-checkbox filter-price" value="50-100">
+                                    <span class="text-[14px] text-gray-700 font-medium group-hover:text-black">$50 - $100</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="custom-checkbox filter-price" value="100-200">
+                                    <span class="text-[14px] text-gray-700 font-medium group-hover:text-black">$100 - $200</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="custom-checkbox filter-price" value="over-200">
+                                    <span class="text-[14px] text-gray-700 font-medium group-hover:text-black">Over $200</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Product Grid -->
+                <div class="flex-1">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6" id="product-grid">
+                        <!-- Javascript will dynamically inject the database products here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- PREMIUM CART SLIDE-OUT -->
+        <div id="cart-overlay" class="fixed inset-0 bg-brand-dark/40 backdrop-blur-sm z-50 overlay">
+            <div id="cart-sidebar" class="absolute top-0 right-0 h-full w-full sm:w-[420px] bg-white border-l border-gray-200 shadow-2xl flex flex-col p-6 sm:p-8 slide-panel">
+                
+                <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-4">
+                    <h2 class="text-[22px] font-bold tracking-tight text-gray-900">Your Cart</h2>
+                    <button class="cart-toggle-btn w-9 h-9 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors text-gray-700">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="slide-cart-items" class="flex-1 overflow-y-auto space-y-4 pr-2">
+                    <!-- Dynamic Cart Items Rendered Here -->
+                </div>
+                
+                <div class="mt-auto pt-6 border-t border-gray-100">
+                    <div class="flex justify-between items-end mb-6">
+                        <span class="text-[15px] font-bold text-gray-600">Subtotal</span>
+                        <span id="slide-subtotal" class="text-[22px] font-bold text-gray-900">$0.00</span>
+                    </div>
+                    <button id="proceed-checkout-btn" class="w-full bg-brand-dark text-white py-4 text-[15px] rounded-xl font-bold hover:bg-black transition-colors shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                        Proceed to Checkout 
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M5 12h14"/>
+                            <path d="m12 5 7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- FULLY EXPANDED PREMIUM FOOTER -->
+        <footer class="border-t border-white/40 glass-panel bg-white/60 pt-16 pb-8 mt-auto rounded-t-3xl">
+            <div class="max-w-[1600px] mx-auto px-5 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                
+                <!-- Footer Col 1 -->
+                <div>
+                    <h3 class="font-bold text-[18px] mb-4 uppercase text-brand-dark tracking-tight">ZSHOP.</h3>
+                    <p class="text-gray-700 text-[13px] font-medium leading-relaxed max-w-xs">
+                        Premium essentials built for the modern lifestyle.<br>
+                        Sustainably sourced, meticulously crafted.
+                    </p>
+                </div>
+                
+                <!-- Footer Col 2 -->
+                <div>
+                    <h4 class="font-bold text-[13px] mb-4 uppercase tracking-wider text-gray-600">SHOP CATALOG</h4>
+                    <ul class="space-y-3 text-[14px] text-gray-800 font-medium">
+                        <li><a href="#" class="hover:text-brand-orange transition-colors">All Products</a></li>
+                        <li><a href="#" class="hover:text-brand-orange transition-colors">Menswear</a></li>
+                        <li><a href="#" class="hover:text-brand-orange transition-colors">Womenswear</a></li>
+                        <li><a href="#" class="hover:text-brand-orange transition-colors">Accessories</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Footer Col 3 -->
+                <div>
+                    <h4 class="font-bold text-[13px] mb-4 uppercase tracking-wider text-gray-600">SUPPORT</h4>
+                    <ul class="space-y-3 text-[14px] text-gray-800 font-medium">
+                        <li><a href="#" class="hover:text-brand-orange transition-colors">FAQ & Contact</a></li>
+                        <li><a href="#" class="hover:text-brand-orange transition-colors">Shipping & Returns</a></li>
+                        <li><a href="account.html" class="hover:text-brand-orange transition-colors">My Account Dashboard</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Footer Col 4: Newsletter -->
+                <div>
+                    <h4 class="font-bold text-[13px] mb-4 uppercase tracking-wider text-gray-600">NEWSLETTER</h4>
+                    <div class="flex gap-2">
+                        <input type="email" placeholder="Email address" class="bg-white/80 rounded-xl px-4 py-3 text-[13px] font-medium w-full outline-none focus:ring-2 focus:ring-brand-dark/20 border border-white/80 transition-all">
+                        <button class="bg-brand-dark text-white rounded-xl px-6 text-[13px] font-bold hover:bg-black transition-colors shadow-md">
+                            Join
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Copyright Line -->
+            <div class="max-w-[1600px] mx-auto px-5 sm:px-8 lg:px-12 border-t border-gray-300/40 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-gray-600 text-[12px] font-medium">© 2026 Zshop Premium. All rights reserved.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- =========================================================================================
+         VIEW 2: CHECKOUT INFO & ORDER PLACEMENT (Multi-Step Logic)
+    ========================================================================================== -->
+    <div id="view-checkout" class="hidden w-full flex-col min-h-screen">
+        
+        <nav class="fixed top-0 inset-x-0 z-40 pt-4 px-6 flex justify-center">
+            <div class="glass-panel bg-white/70 rounded-full p-2.5 flex items-center justify-between w-full max-w-[1200px] shadow-sm">
+                <div class="pl-2">
+                    <button id="back-to-shop-btn" class="flex items-center gap-2 font-bold text-[13px] text-gray-800 hover:text-black transition-colors hover:-translate-x-1">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg> 
+                        Return to Shop
+                    </button>
+                </div>
+                <div class="text-[18px] font-bold tracking-tight uppercase absolute left-1/2 -translate-x-1/2">
+                    ZSHOP.
+                </div>
+                <div class="pr-4 flex items-center gap-2 text-green-700">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <span class="text-[12px] font-bold uppercase tracking-wider hidden sm:block">Secure Checkout</span>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-1 pt-32 sm:pt-40 px-5 sm:px-8 lg:px-12 max-w-[1200px] mx-auto w-full pb-32 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                
+                <!-- LEFT COLUMN: Forms -->
+                <div class="lg:col-span-7 flex flex-col gap-8">
+                    
+                    <!-- STEP 1: CONTACT & SHIPPING (User Input) -->
+                    <div id="step-1-details" class="checkout-step flex flex-col gap-8">
+                        <section class="glass-panel bg-white/70 p-6 sm:p-8 rounded-3xl shadow-sm">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 class="text-[20px] font-bold text-gray-900">Contact Information</h2>
+                                <div class="flex items-center gap-2 bg-green-100 border border-green-200 px-3 py-1.5 rounded-full">
+                                    <div class="user-initials w-5 h-5 bg-brand-orange text-white rounded-full flex items-center justify-center text-[10px] font-bold">...</div>
+                                    <span class="text-[11px] font-bold text-green-800 uppercase tracking-wider">Logged In</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1.5 uppercase tracking-wider pl-1">First Name</label>
+                                    <input type="text" id="chk-first" class="w-full flat-input rounded-xl px-4 py-3 text-[14px] font-medium" placeholder="First Name">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1.5 uppercase tracking-wider pl-1">Last Name</label>
+                                    <input type="text" id="chk-last" class="w-full flat-input rounded-xl px-4 py-3 text-[14px] font-medium" placeholder="Last Name">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1.5 uppercase tracking-wider pl-1">Phone Number</label>
+                                    <input type="tel" id="chk-phone" placeholder="+1 (555) 000-0000" class="w-full flat-input rounded-xl px-4 py-3 text-[14px] font-medium">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1.5 uppercase tracking-wider pl-1">Email Address</label>
+                                    <input type="email" id="chk-email" class="w-full flat-input rounded-xl px-4 py-3 text-[14px] font-medium text-gray-500 bg-white/40 cursor-not-allowed" readonly>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="glass-panel bg-white/70 p-6 sm:p-8 rounded-3xl shadow-sm">
+                            <h2 class="text-[20px] font-bold text-gray-900 mb-6">Shipping Address</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="sm:col-span-2">
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1.5 uppercase tracking-wider pl-1">Street Address</label>
+                                    <input type="text" id="chk-street" placeholder="123 Vanguard Blvd, Suite 400" class="w-full flat-input rounded-xl px-4 py-3 text-[14px] font-medium">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1.5 uppercase tracking-wider pl-1">City</label>
+                                    <input type="text" id="chk-city" placeholder="New York" class="w-full flat-input rounded-xl px-4 py-3 text-[14px] font-medium">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1.5 uppercase tracking-wider pl-1">State / Province</label>
+                                    <select id="chk-state" class="w-full flat-input rounded-xl px-4 py-3 text-[14px] font-medium outline-none text-gray-900 appearance-none cursor-pointer">
+                                        <option value="">Select State</option>
+                                        <option value="NY">New York</option>
+                                        <option value="CA">California</option>
+                                        <option value="TX">Texas</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1.5 uppercase tracking-wider pl-1">ZIP / Postal Code</label>
+                                    <input type="text" id="chk-zip" placeholder="10001" class="w-full flat-input rounded-xl px-4 py-3 text-[14px] font-medium">
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- STEP 2: SUCCESS & PAY WITH STRIPE ONLY (Hidden until DB placement succeeds) -->
+                    <div id="step-2-payment" class="checkout-step hidden-step">
+                        <section class="glass-panel bg-white/90 p-8 sm:p-12 rounded-3xl shadow-xl flex flex-col items-center text-center">
+                            
+                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg mb-6">
+                                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <path d="M20 6L9 17l-5-5"/>
+                                </svg>
+                            </div>
+                            
+                            <h3 class="text-[24px] font-bold text-gray-900 mb-3">Order Placed Successfully!</h3>
+                            <p class="text-[14px] text-gray-600 font-medium max-w-md mx-auto mb-10 leading-relaxed">
+                                Your order has been saved securely to your account. Please complete the payment process below to finalize your shipment.
+                            </p>
+
+                            <!-- DEDICATED STRIPE REDIRECT BUTTON -->
+                            <button id="pay-stripe-btn" class="w-full max-w-sm bg-[#635BFF] text-white text-[16px] font-bold py-4 rounded-xl hover:bg-[#524BDE] active:scale-95 transition-all flex justify-center items-center gap-2 shadow-lg">
+                                <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M11.996 0a12 12 0 0 0-3.344.475l.135 1.542a10.45 10.45 0 0 1 3.209-.413c3.844 0 6.643 1.954 6.643 5.378 0 3.738-3.315 5.564-6.84 5.564-1.127 0-2.18-.212-3.072-.568L8.59 13.52c.866.368 2 .611 3.22.611 4.542 0 8.44-2.52 8.44-7.065C20.25 3.1 16.593 0 11.996 0zM7.228 12.8c-2.459 0-4.326-1.558-4.326-4.08 0-2.618 1.93-4.225 4.5-4.225 1.077 0 1.942.233 2.54.55l-.4 1.5c-.5-.264-1.21-.462-2.106-.462-1.745 0-2.88 1.01-2.88 2.56 0 1.528.98 2.51 2.744 2.51 1.05 0 1.98-.316 2.66-.75l.398 1.48a6.38 6.38 0 0 1-3.121.918zM4.195 21.05c-1.378 0-2.505-.36-3.23-.84l.582-1.51c.646.402 1.625.753 2.673.753 1.34 0 2.1-.53 2.1-1.32 0-.8-.74-1.19-2.095-1.63-1.696-.54-2.73-1.42-2.73-2.86 0-1.64 1.35-2.91 3.51-2.91 1.14 0 2.2.33 2.87.72l-.54 1.49c-.58-.33-1.44-.6-2.33-.6-1.2 0-1.85.5-1.85 1.25 0 .75.76 1.13 2.05 1.55 1.77.58 2.79 1.45 2.79 2.91 0 1.83-1.39 3-3.79 3z"/>
+                                </svg>
+                                Pay with Stripe
+                            </button>
+                        </section>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN: ORDER SUMMARY -->
+                <div class="lg:col-span-5 relative">
+                    <div class="glass-panel bg-white/70 p-6 sm:p-8 rounded-3xl sticky top-32 shadow-lg">
+                        <h2 class="text-[20px] font-bold tracking-tight text-gray-900 mb-6">Order Summary</h2>
+                        
+                        <!-- Items rendered via JS -->
+                        <div class="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2" id="checkout-cart-list"></div>
+                        
+                        <!-- Promos -->
+                        <div class="flex gap-2 mb-6" id="promo-container">
+                            <input type="text" id="chk-promo-input" placeholder="Promo code (Try ZSHOP20)" class="flex-1 flat-input rounded-xl px-4 py-3 text-[12px] font-bold outline-none uppercase placeholder-gray-500">
+                            <button id="chk-apply-promo-btn" class="bg-gray-200 hover:bg-gray-300 text-brand-dark px-5 py-3 rounded-xl text-[12px] font-bold transition-colors">Apply</button>
+                        </div>
+                        
+                        <div class="h-px bg-gray-300/50 my-6"></div>
+                        
+                        <!-- Calculations -->
+                        <div class="space-y-4 mb-6">
+                            <div class="flex justify-between text-[14px]">
+                                <span class="text-gray-800 font-bold">Subtotal</span>
+                                <span id="chk-subtotal" class="text-gray-900 font-bold">$0.00</span>
+                            </div>
+                            <div class="flex justify-between text-[14px] hidden" id="chk-discount-row">
+                                <span class="text-gray-800 font-bold">Discount (<span id="chk-active-promo"></span>)</span>
+                                <span id="chk-discount" class="text-brand-orange font-bold">-$0.00</span>
+                            </div>
+                            <div class="flex justify-between text-[14px]">
+                                <span class="text-gray-800 font-bold">Estimated Tax (8%)</span>
+                                <span id="chk-tax" class="text-gray-900 font-bold">$0.00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="h-px bg-gray-300/50 my-6"></div>
+                        
+                        <!-- Total -->
+                        <div class="flex justify-between items-end mb-8">
+                            <span class="text-[16px] font-bold text-gray-900">Total</span>
+                            <div class="text-right">
+                                <span id="chk-total" class="block text-[36px] font-bold text-brand-dark leading-none tracking-tight">$0.00</span>
+                                <span class="block text-[11px] font-bold text-gray-600 mt-1 uppercase">USD</span>
+                            </div>
+                        </div>
+
+                        <!-- BUTTON 1: PLACE ORDER (Saves to DB, moves to Step 2) -->
+                        <button id="place-order-btn" class="w-full bg-[#E5987A] text-white text-[16px] font-bold py-4 rounded-xl hover:bg-[#d68768] active:scale-95 transition-all flex justify-center items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                            Place Order 
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M5 12h14"/>
+                                <path d="m12 5 7 7-7 7"/>
+                            </svg>
+                        </button>
+                        
+                        <p id="checkout-disclaimer" class="text-center text-[11px] font-medium text-gray-600 mt-4 px-4">
+                            By placing your order, you agree to our Terms of Service.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- =========================================================================================
+         MASTER JAVASCRIPT: Logic, Backend Sync, Multi-Step Checkout
+    ========================================================================================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            /* ==========================================================================
+               1. GLOBAL STATE & CONFIGURATION
+               ========================================================================== */
+            let cartData = JSON.parse(localStorage.getItem('vanguard_cart')) || []; 
+            let discountRate = 0; 
+            const promoCodes = { 'ZSHOP20': 0.20, 'SUMMER10': 0.10 };
+            
+            const API_URL = 'http://127.0.0.1:5000/api/products';
+            const ORDERS_API = 'http://127.0.0.1:5000/api/orders';
+
+            /* ==========================================================================
+               2. FETCH LIVE PRODUCTS FROM PYTHON BACKEND ONLY (NO LOCALSTORAGE)
+               ========================================================================== */
+            async function fetchProducts() {
+                const grid = document.getElementById('product-grid');
+                
+                try {
+                    // Make the request to the database
+                    const response = await fetch(API_URL, { mode: 'cors' });
+                    
+                    if (!response.ok) {
+                        throw new Error("DB Connection failed");
+                    }
+                    
+                    const data = await response.json();
+                    const productsArray = data.products ? data.products : (Array.isArray(data) ? data : []);
+                    
+                    renderProducts(productsArray, grid);
+
+                } catch (error) {
+                    // Strict failure state. Do not use local storage to ensure integrity.
+                    grid.innerHTML = `
+                        <div class="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-red-300 rounded-2xl bg-red-50">
+                            <i class="text-red-500 text-4xl mb-4 font-bold">X</i>
+                            <p class="text-brand-dark font-bold text-lg mb-2">Backend Disconnected</p>
+                            <p class="text-gray-500 text-sm max-w-md">Please ensure your Python backend is running on 127.0.0.1:5000.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            function renderProducts(productsData, grid) {
+                grid.innerHTML = '';
+                
+                if (productsData.length === 0) {
+                    grid.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400 font-bold uppercase tracking-widest">No products available in the store yet.</div>';
+                    return;
+                }
+
+                // Loop through the data and create DOM elements
+                productsData.forEach(p => {
+                    const imgSrc = p.image || p.image_url || 'https://placehold.co/400x500/eaeaea/999999?text=Image+Missing';
+                    const price = parseFloat(p.price || 0).toFixed(2);
+                    const name = p.name || 'Premium Item';
+                    
+                    const productEl = document.createElement('div');
+                    productEl.className = 'group flex flex-col product-item solid-card';
+                    productEl.setAttribute('data-category', (p.category || 'accessories').toLowerCase());
+                    productEl.setAttribute('data-price', price);
+                    
+                    productEl.innerHTML = `
+                        <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-[15px] bg-gray-100">
+                            <img src="${imgSrc}" class="w-full h-full object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105">
+                            
+                            <!-- Add to cart overlay layer -->
+                            <div class="absolute inset-x-3 bottom-3 flex gap-2 translate-y-[120%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400 z-20">
+                                <button class="add-to-cart-btn flex-1 bg-white/95 backdrop-blur-md text-brand-dark text-[13px] font-bold py-3 rounded-xl hover:bg-black hover:text-white transition-all shadow-lg active:scale-95" 
+                                        data-id="${p.id}" 
+                                        data-name="${name}" 
+                                        data-price="${price}" 
+                                        data-img="${imgSrc}">
+                                    Add to Cart - $${price}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Product info -->
+                        <div class="p-4 flex flex-col justify-between flex-1">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-[14px] font-bold text-gray-900 group-hover:text-brand-orange transition-colors">${name}</h3>
+                                <span class="text-[15px] font-bold text-gray-900 ml-2">$${price}</span>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(productEl);
+                });
+            }
+
+            // Initialize the store fetch
+            fetchProducts();
+
+            /* ==========================================================================
+               3. USER AUTHENTICATION SYNC
+               ========================================================================== */
+            async function fetchUser() {
+                const token = localStorage.getItem('vanguard_token');
+                if (!token) return; 
+                
+                try {
+                    const res = await fetch('http://localhost:3000/api/me', { 
+                        headers: { 'Authorization': `Bearer ${token}` } 
+                    });
+                    
+                    if (res.ok) {
+                        const data = await res.json();
+                        const user = data.user;
+                        
+                        // Parse names securely
+                        const names = user.fullName.trim().split(' ');
+                        const initial = names[0][0].toUpperCase();
+                        
+                        // Fill UI elements with correct user data
+                        document.querySelectorAll('.user-full-name').forEach(el => el.textContent = user.fullName);
+                        document.querySelectorAll('.user-initials').forEach(el => el.textContent = initial);
+                        
+                        document.getElementById('chk-first').value = names[0] || '';
+                        document.getElementById('chk-last').value = names.slice(1).join(' ') || '';
+                        document.getElementById('chk-email').value = user.email || '';
+                    }
+                } catch(e) {
+                    console.error("Failed to load user info", e);
+                }
+                updateShopCartUI();
+            }
+            
+            // Run the auth sync
+            fetchUser();
+
+            /* ==========================================================================
+               4. SHOPPING CART LOGIC
+               ========================================================================== */
+            const slideItemsList = document.getElementById('slide-cart-items');
+            const slideSubtotal = document.getElementById('slide-subtotal');
+            const cartOverlay = document.getElementById('cart-overlay');
+            const cartSidebar = document.getElementById('cart-sidebar');
+
+            window.updateQty = (index, delta) => {
+                cartData[index].quantity += delta;
+                
+                // Remove item if quantity falls to zero or below
+                if (cartData[index].quantity <= 0) {
+                    cartData.splice(index, 1);
+                }
+                
+                // Update storage and refresh UI
+                localStorage.setItem('vanguard_cart', JSON.stringify(cartData));
+                updateShopCartUI();
+            };
+
+            function updateShopCartUI() {
+                slideItemsList.innerHTML = '';
+                let subtotal = 0; 
+                let count = 0;
+                
+                if (cartData.length === 0) {
+                    slideItemsList.innerHTML = `<p class="text-center text-gray-500 mt-10 font-bold">Your cart is empty.</p>`;
+                    document.getElementById('proceed-checkout-btn').classList.add('opacity-50', 'pointer-events-none');
+                } else {
+                    document.getElementById('proceed-checkout-btn').classList.remove('opacity-50', 'pointer-events-none');
+                    
+                    cartData.forEach((item, i) => {
+                        const qty = item.quantity || 1;
+                        const price = parseFloat(item.price) || 0;
+                        
+                        subtotal += (price * qty);
+                        count += qty;
+                        
+                        slideItemsList.innerHTML += `
+                            <div class="flex gap-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+                                <img src="${item.img}" class="w-16 h-16 rounded-xl object-cover mix-blend-multiply bg-gray-50">
+                                <div class="flex-1">
+                                    <h4 class="text-[13px] font-bold text-gray-900">${item.name}</h4>
+                                    <div class="text-[13px] font-bold text-brand-orange">$${price.toFixed(2)}</div>
+                                    <div class="flex items-center justify-between mt-2">
+                                        <div class="flex items-center gap-3 bg-gray-50 rounded-lg px-2 py-1 border border-gray-200">
+                                            <button class="font-bold text-[16px] px-2 text-gray-500 hover:text-black" onclick="updateQty(${i}, -1)">-</button>
+                                            <span class="text-[12px] font-bold text-gray-900">${qty}</span>
+                                            <button class="font-bold text-[16px] px-2 text-gray-500 hover:text-black" onclick="updateQty(${i}, 1)">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Update final totals on DOM
+                slideSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+                document.querySelectorAll('.nav-cart-total').forEach(el => el.textContent = `Cart (${count})`);
+            }
+
+            // Using event delegation because products are rendered dynamically from the database
+            document.getElementById('product-grid').addEventListener('click', (e) => {
+                const btn = e.target.closest('.add-to-cart-btn');
+                if (!btn) return;
+                
+                e.stopPropagation();
+                
+                // Create item object from the button's dataset attributes
+                const item = { 
+                    id: btn.dataset.id, 
+                    name: btn.dataset.name, 
+                    price: parseFloat(btn.dataset.price), 
+                    img: btn.dataset.img, 
+                    quantity: 1 
+                };
+                
+                // Check if item exists in cart already
+                const existing = cartData.find(i => i.id === item.id);
+                if(existing) {
+                    existing.quantity++; 
+                } else {
+                    cartData.push(item);
+                }
+                
+                // Persist cart
+                localStorage.setItem('vanguard_cart', JSON.stringify(cartData));
+                updateShopCartUI();
+                
+                // Visual feedback logic (Button turns green, toast appears)
+                const originalText = btn.innerHTML;
+                btn.innerHTML = 'Added! ✓';
+                btn.classList.add('bg-green-600', 'text-white', 'border-green-600');
+                
+                const toast = document.getElementById('cart-toast');
+                toast.classList.add('show');
+
+                // Reset visual feedback after 2 seconds
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('bg-green-600', 'text-white', 'border-green-600');
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+
+            // Handle the open/close of the side cart overlay panel
+            document.querySelectorAll('.cart-toggle-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if(cartOverlay.classList.contains('active')) {
+                        cartSidebar.classList.remove('open');
+                        setTimeout(() => { 
+                            cartOverlay.classList.remove('active'); 
+                            document.body.style.overflow = ''; 
+                        }, 300);
+                    } else { 
+                        cartOverlay.classList.add('active'); 
+                        setTimeout(() => cartSidebar.classList.add('open'), 10); 
+                        document.body.style.overflow = 'hidden'; 
+                    }
+                });
+            });
+
+            /* ==========================================================================
+               5. MULTI-STEP CHECKOUT LOGIC & CALCULATIONS
+               ========================================================================== */
+            const viewShop = document.getElementById('view-shop');
+            const viewCheckout = document.getElementById('view-checkout');
+
+            // Switch view from shop to checkout
+            document.getElementById('proceed-checkout-btn').addEventListener('click', () => {
+                if (cartData.length === 0) return;
+                
+                // Close cart sidebar
+                cartSidebar.classList.remove('open');
+                setTimeout(() => { 
+                    cartOverlay.classList.remove('active'); 
+                    document.body.style.overflow = ''; 
+                }, 300);
+                
+                // Swap views using tailwind utility classes
+                viewShop.classList.add('hidden'); 
+                viewShop.classList.remove('flex');
+                
+                viewCheckout.classList.remove('hidden'); 
+                viewCheckout.classList.add('flex');
+                
+                // Transition video backgrounds
+                document.getElementById('shop-bg').style.opacity = "0";
+                document.getElementById('checkout-bg').classList.remove('hidden');
+                document.getElementById('checkout-bg').style.zIndex = "-1";
+                
+                // Reset scroll
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                
+                renderCheckoutUI(); 
+            });
+
+            // Back button to return to shop
+            document.getElementById('back-to-shop-btn').addEventListener('click', () => {
+                viewCheckout.classList.add('hidden'); 
+                viewCheckout.classList.remove('flex');
+                
+                viewShop.classList.remove('hidden'); 
+                viewShop.classList.add('flex');
+                
+                document.getElementById('checkout-bg').classList.add('hidden');
+                document.getElementById('shop-bg').style.opacity = "1";
+                
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            });
+
+            // Renders the math, discount, and list of items inside the checkout summary
+            function renderCheckoutUI() {
+                const list = document.getElementById('checkout-cart-list');
+                let sub = 0; 
+                list.innerHTML = '';
+                
+                cartData.forEach(item => {
+                    const qty = item.quantity || 1;
+                    const price = parseFloat(item.price) || 0;
+                    sub += (price * qty);
+
+                    list.innerHTML += `
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <img src="${item.img}" class="w-16 h-16 rounded-xl object-cover border border-white/50 bg-white/60 mix-blend-multiply">
+                                <span class="absolute -top-2 -right-2 w-5 h-5 bg-brand-dark text-white text-[10px] font-bold flex items-center justify-center rounded-full">${qty}</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-[13px] font-bold text-gray-900">${item.name}</h4>
+                            </div>
+                            <span class="text-[14px] font-bold text-gray-900">$${(price * qty).toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+
+                const discountAmount = sub * discountRate;
+                const discountedSub = sub - discountAmount;
+
+                // Handle visual discount row
+                if (discountRate > 0) {
+                    document.getElementById('chk-discount-row').classList.remove('hidden');
+                    document.getElementById('chk-discount').textContent = `-$${discountAmount.toFixed(2)}`;
+                } else {
+                    document.getElementById('chk-discount-row').classList.add('hidden');
+                }
+
+                const tax = discountedSub * 0.08;
+                const total = discountedSub + tax;
+
+                // Populate DOM fields
+                document.getElementById('chk-subtotal').textContent = `$${sub.toFixed(2)}`;
+                document.getElementById('chk-tax').textContent = `$${tax.toFixed(2)}`;
+                document.getElementById('chk-total').textContent = `$${total.toFixed(2)}`;
+            }
+
+            // Handles the Apply Promo Code button functionality
+            document.getElementById('chk-apply-promo-btn')?.addEventListener('click', () => {
+                const code = document.getElementById('chk-promo-input').value.trim().toUpperCase();
+                
+                if (promoCodes[code]) {
+                    discountRate = promoCodes[code];
+                    document.getElementById('chk-active-promo').textContent = code;
+                    document.getElementById('chk-promo-input').value = '';
+                    renderCheckoutUI();
+                } else { 
+                    alert('Invalid promo code. Please try ZSHOP20.'); 
+                    discountRate = 0; 
+                    renderCheckoutUI(); 
+                }
+            });
+
+            /* ==========================================================================
+               6. CHECKOUT STEP 1: PLACE ORDER (SAVES TO PYTHON DB)
+               ========================================================================== */
+            document.getElementById('place-order-btn').addEventListener('click', async (e) => {
+                const btn = e.target;
+                
+                // Run address and name validations before pushing
+                const first = document.getElementById('chk-first').value;
+                const last = document.getElementById('chk-last').value;
+                const street = document.getElementById('chk-street').value;
+                const city = document.getElementById('chk-city').value;
+                const email = document.getElementById('chk-email').value;
+                
+                if(!first || !last || !street || !city || !email) { 
+                    alert("Please complete your contact and shipping information entirely."); 
+                    return; 
+                }
+                
+                if(cartData.length === 0) {
+                    alert("Cart is empty.");
+                    return;
+                }
+
+                // Show processing indicator
+                btn.innerHTML = `
+                    <svg class="w-4 h-4 mr-2 animate-spin inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" stroke-dasharray="15 85" stroke-linecap="round"/>
+                    </svg> Saving Order...
+                `; 
+                btn.classList.add('opacity-80', 'pointer-events-none');
+                
+                const orderId = "ZS-" + Math.floor(1000 + Math.random() * 9000);
+                const orderTotal = document.getElementById('chk-total').textContent;
+                
+                // Create JSON payload for Database
+                const newOrder = {
+                    id: orderId,
+                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    customer: first + " " + last,
+                    email: email,
+                    address: `${street}, ${city}`,
+                    status: "AWAITING PAYMENT", // Status allows Admin tracking of unpaid carts
+                    promo: document.getElementById('chk-active-promo')?.textContent || "",
+                    total: orderTotal,
+                    items: cartData.map(item => ({
+                        name: item.name, 
+                        price: item.price, 
+                        quantity: item.quantity, 
+                        img: item.img, 
+                        meta: "Unpaid Stripe Setup"
+                    }))
+                };
+
+                try {
+                    // STRICT DB POST: Order MUST successfully save to Python before moving to Step 2
+                    const res = await fetch(ORDERS_API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newOrder)
+                    });
+
+                    if(!res.ok) {
+                        throw new Error("Backend save failed. Server returned an error code.");
+                    }
+
+                    // Store credentials in session storage so the Stripe file knows what to charge
+                    sessionStorage.setItem('stripe_pending_id', orderId);
+                    sessionStorage.setItem('stripe_pending_total', orderTotal);
+
+                    // Wipe local cart since the order is now successfully stored in the Database
+                    cartData = [];
+                    localStorage.setItem('vanguard_cart', JSON.stringify([]));
+
+                    // Show Step 2 (Order Success -> Pay with Stripe button)
+                    document.getElementById('step-1-details').classList.add('hidden-step');
+                    
+                    setTimeout(() => {
+                        document.getElementById('step-2-payment').classList.remove('hidden-step');
+                        document.getElementById('place-order-btn').classList.add('hidden');
+                        document.getElementById('checkout-disclaimer').classList.add('hidden');
+                        
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 400);
+
+                } catch(err) {
+                    console.error(err);
+                    alert("DATABASE CONNECTION FAILED: Cannot secure your order right now. Please ensure your Python backend is running.");
+                    
+                    // Reset Button UI
+                    btn.innerHTML = `Place Order`; 
+                    btn.classList.remove('opacity-80', 'pointer-events-none');
+                }
+            });
+
+            /* ==========================================================================
+               7. CHECKOUT STEP 2: REDIRECT TO STRIPE PAGE
+               ========================================================================== */
+            document.getElementById('pay-stripe-btn').addEventListener('click', () => {
+                // Takes the user exactly to the dedicated secure Stripe form
+                window.location.href = 'checkout(with stripe).html';
+            });
+
+            /* ==========================================================================
+               8. DYNAMIC GRID FILTERING LOGIC
+               ========================================================================== */
+            const categoryCheckboxes = document.querySelectorAll('.filter-category');
+            const priceCheckboxes = document.querySelectorAll('.filter-price');
+            
+            const filterGrid = () => {
+                const products = document.querySelectorAll('.product-item');
+                
+                // Get selected categories
+                let activeCategories = Array.from(categoryCheckboxes)
+                    .filter(cb => cb.checked && cb.value !== 'all')
+                    .map(cb => cb.value);
+                    
+                const isAllCategory = document.querySelector('.filter-category[value="all"]').checked;
+                if(isAllCategory && activeCategories.length === 0) activeCategories = ['all'];
+
+                // Get selected prices
+                let activePrices = Array.from(priceCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                products.forEach(product => {
+                    const cat = product.getAttribute('data-category');
+                    const price = parseFloat(product.getAttribute('data-price') || 0);
+
+                    // Category Logic
+                    let catMatch = activeCategories.includes('all') || activeCategories.includes(cat);
+                    
+                    // Price Logic
+                    let priceMatch = true;
+                    if (activePrices.length > 0) {
+                        priceMatch = false;
+                        if (activePrices.includes('under-50') && price < 50) priceMatch = true;
+                        if (activePrices.includes('50-100') && price >= 50 && price <= 100) priceMatch = true;
+                        if (activePrices.includes('100-200') && price > 100 && price <= 200) priceMatch = true;
+                        if (activePrices.includes('over-200') && price > 200) priceMatch = true;
+                    }
+
+                    // Visibility Toggle
+                    if (catMatch && priceMatch) {
+                        product.classList.remove('hidden-item');
+                    } else {
+                        product.classList.add('hidden-item');
+                    }
+                });
+            };
+
+            // Event listeners for category filtering
+            categoryCheckboxes.forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    // Logic to toggle "All Products" dynamically
+                    if (e.target.value === 'all' && e.target.checked) {
+                        categoryCheckboxes.forEach(box => { if(box.value !== 'all') box.checked = false; });
+                    } else if (e.target.value !== 'all' && e.target.checked) {
+                        const allCheck = document.querySelector('.filter-category[value="all"]');
+                        if(allCheck) allCheck.checked = false;
+                    }
+                    filterGrid();
+                });
+            });
+
+            // Event listeners for price filtering
+            priceCheckboxes.forEach(cb => cb.addEventListener('change', filterGrid));
+
+            // Trigger the initial cart UI setup on load
+            updateShopCartUI();
+        });
+    </script>
+</body>
+</html>

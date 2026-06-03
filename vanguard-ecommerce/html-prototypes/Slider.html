@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Hero Slider</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+    <!-- Google Fonts for Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        /* Base Reset for iframe embedding */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        /* Typography */
+        .font-sans { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+
+        /* Fullscreen Swiper */
+        .swiper {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Video Backgrounds */
+        .video-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.65); /* Darkened slightly more to ensure high contrast without shadows */
+            transition: filter 1s ease;
+        }
+
+        /* Center content wrapper */
+        .slide-content-wrapper {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            perspective: 1500px; /* Crucial for deep 3D effect */
+            pointer-events: none; /* Let mouse events pass through to document */
+        }
+
+        /* The element that actually tilts */
+        .tilt-wrapper {
+            transform-style: preserve-3d;
+            /* Will be controlled by JS. Transition only applies when snapping back */
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            pointer-events: auto; /* Re-enable pointer events for the card */
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* The Premium Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.35);
+            border-left: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 1.5rem;
+            padding: 3.5rem 4.5rem;
+            text-align: center;
+            max-width: 90%;
+            width: 700px;
+            
+            /* No shadows requested */
+            box-shadow: none;
+            text-shadow: none;
+            
+            /* 3D separation from background */
+            transform: translateZ(40px);
+        }
+
+        /* Typography Elements inside Card */
+        .card-subtitle {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .card-title {
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+
+        .card-desc {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+            max-width: 80%;
+            margin: 0 auto 2.5rem auto;
+            line-height: 1.6;
+        }
+
+        /* Premium Transparent Button */
+        .premium-btn {
+            display: inline-block;
+            padding: 0.875rem 2.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #fff;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 9999px;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+        }
+        .premium-btn:hover {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* Staggered CSS Animations on Slide Change */
+        .swiper-slide .animate-el {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .swiper-slide-active .animate-el {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .swiper-slide .delay-1 { transition-delay: 0.1s; }
+        .swiper-slide .delay-2 { transition-delay: 0.2s; }
+        .swiper-slide .delay-3 { transition-delay: 0.3s; }
+        .swiper-slide .delay-4 { transition-delay: 0.4s; }
+
+        /* Custom Swiper Navigation */
+        .swiper-button-next, .swiper-button-prev {
+            width: 54px;
+            height: 54px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .swiper-button-next:after, .swiper-button-prev:after {
+            font-size: 1.25rem;
+            font-weight: 300;
+        }
+        .swiper-button-next:hover, .swiper-button-prev:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.1);
+        }
+
+        /* Swiper Pagination Overrides */
+        .swiper-pagination-bullet {
+            background: rgba(255, 255, 255, 0.3);
+            opacity: 1;
+            width: 8px;
+            height: 8px;
+            transition: all 0.4s ease;
+        }
+        .swiper-pagination-bullet-active {
+            background: #fff;
+            width: 32px;
+            border-radius: 4px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="swiper heroSwiper" id="main-slider">
+        <div class="swiper-wrapper">
+            
+            <!-- Category 1: Furniture -->
+            <div class="swiper-slide">
+                <video autoplay loop muted playsinline class="video-bg">
+                    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260428_193507_4286c423-2fd9-4efd-92bd-91a939453fc1.mp4" type="video/mp4">
+                </video>
+                <div class="slide-content-wrapper">
+                    <div class="tilt-wrapper">
+                        <div class="glass-card">
+                            <span class="card-subtitle font-sans animate-el delay-1">Modern Living</span>
+                            <h2 class="card-title text-4xl md:text-5xl lg:text-[4rem] font-light font-sans animate-el delay-2">
+                                <span class="font-serif italic font-medium pr-1">Furniture</span> makes a home modern
+                            </h2>
+                            <p class="card-desc font-sans animate-el delay-3">
+                                Experience unparalleled comfort and timeless design. Elevate your living space with our premium selection of masterfully crafted pieces.
+                            </p>
+                            <div class="animate-el delay-4">
+                                <button class="premium-btn">Explore Collection</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 2: Fashion -->
+            <div class="swiper-slide">
+                <video autoplay loop muted playsinline class="video-bg">
+                    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260511_214311_24de0b75-7eaa-4f42-86d8-8c2014ca2851.mp4" type="video/mp4">
+                </video>
+                <div class="slide-content-wrapper">
+                    <div class="tilt-wrapper">
+                        <div class="glass-card">
+                            <span class="card-subtitle font-sans animate-el delay-1">Style & Elegance</span>
+                            <h2 class="card-title text-4xl md:text-5xl lg:text-[4rem] font-light font-sans animate-el delay-2">
+                                <span class="font-serif italic font-medium pr-1">Fashion</span> dress yourself up
+                            </h2>
+                            <p class="card-desc font-sans animate-el delay-3">
+                                Curated apparel designed to empower your everyday presence. Discover silhouettes that blend classic tailoring with contemporary aesthetics.
+                            </p>
+                            <div class="animate-el delay-4">
+                                <button class="premium-btn">Shop Apparel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 3: True Beauty (Cosmetics) -->
+            <div class="swiper-slide">
+                <video autoplay loop muted playsinline preload="auto" crossorigin="anonymous" class="video-bg">
+                    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260429_115139_0fc6bd3d-3631-4d26-ab9b-28293887dcc9.mp4" type="video/mp4">
+                </video>
+                <div class="slide-content-wrapper">
+                    <div class="tilt-wrapper">
+                        <div class="glass-card">
+                            <span class="card-subtitle font-sans animate-el delay-1">Pure Radiance</span>
+                            <h2 class="card-title text-4xl md:text-5xl lg:text-[4.5rem] font-light font-sans animate-el delay-2">
+                                True <span class="font-serif italic font-semibold">Beauty</span>
+                            </h2>
+                            <p class="card-desc font-sans animate-el delay-3">
+                                Enhance your natural glow with our organic, sustainable selection of cosmetics. Crafted to nourish, protect, and illuminate.
+                            </p>
+                            <div class="animate-el delay-4">
+                                <button class="premium-btn">Discover Beauty</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 4: Gaming (HLS Stream) -->
+            <div class="swiper-slide">
+                <video id="gaming-video" autoplay loop muted playsinline class="video-bg"></video>
+                <div class="slide-content-wrapper">
+                    <div class="tilt-wrapper">
+                        <div class="glass-card">
+                            <span class="card-subtitle font-sans animate-el delay-1">High Performance</span>
+                            <h2 class="card-title text-4xl md:text-5xl lg:text-[4rem] font-light font-sans animate-el delay-2">
+                                World of <span class="font-serif italic font-medium">gaming</span>
+                            </h2>
+                            <p class="card-desc font-sans animate-el delay-3">
+                                Immerse yourself completely. Experience next-generation setups engineered for precision, speed, and absolute control.
+                            </p>
+                            <div class="animate-el delay-4">
+                                <button class="premium-btn">Enter the Game</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 5: Stationery -->
+            <div class="swiper-slide">
+                <video autoplay loop muted playsinline class="video-bg">
+                    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" type="video/mp4">
+                </video>
+                <div class="slide-content-wrapper">
+                    <div class="tilt-wrapper">
+                        <div class="glass-card">
+                            <span class="card-subtitle font-sans animate-el delay-1">Creative Tools</span>
+                            <h2 class="card-title text-4xl md:text-5xl lg:text-[4rem] font-light font-sans animate-el delay-2">
+                                <span class="font-serif italic font-medium pr-1">Stationery</span> with pencils
+                            </h2>
+                            <p class="card-desc font-sans animate-el delay-3">
+                                Elevate your thoughts and organize your vision. Premium writing instruments and paper goods for the modern professional.
+                            </p>
+                            <div class="animate-el delay-4">
+                                <button class="premium-btn">View Stationery</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 6: Removing Bad Energy -->
+            <div class="swiper-slide">
+                <video autoplay loop muted playsinline class="video-bg">
+                    <!-- Updated video source as requested -->
+                    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260406_133058_0504132a-0cf3-4450-a370-8ea3b05c95d4.mp4" type="video/mp4">
+                </video>
+                <div class="slide-content-wrapper">
+                    <div class="tilt-wrapper">
+                        <div class="glass-card">
+                            <span class="card-subtitle font-sans animate-el delay-1">Inner Balance</span>
+                            <h2 class="card-title text-4xl md:text-5xl lg:text-[4rem] font-light font-sans animate-el delay-2">
+                                Removing <span class="font-serif italic font-medium">bad energy</span>
+                            </h2>
+                            <p class="card-desc font-sans animate-el delay-3">
+                                Restore harmony to your mind, body, and living space. Purify your surroundings with our curated wellness collection.
+                            </p>
+                            <div class="animate-el delay-4">
+                                <button class="premium-btn">Find Balance</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- Navigation Arrows -->
+        <div class="swiper-button-next mr-4 md:mr-8"></div>
+        <div class="swiper-button-prev ml-4 md:ml-8"></div>
+
+        <!-- Pagination -->
+        <div class="swiper-pagination mb-4"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Initialize Premium Crossfade Swiper with Navigation
+            const swiper = new Swiper('.heroSwiper', {
+                effect: 'fade',
+                fadeEffect: {
+                    crossFade: true
+                },
+                loop: true,
+                speed: 1000, 
+                autoplay: {
+                    delay: 5500,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                // Trigger transition reset on slide change
+                on: {
+                    slideChangeTransitionStart: function () {
+                        // Temporarily reset any active tilt on slide change
+                        document.querySelectorAll('.tilt-wrapper').forEach(wrapper => {
+                            wrapper.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+                            wrapper.style.transform = `rotateX(0deg) rotateY(0deg) translateZ(0px)`;
+                        });
+                    }
+                }
+            });
+
+            // 2. Handle HLS Video Stream for Gaming
+            const gamingVideo = document.getElementById('gaming-video');
+            const hlsSource = 'https://stream.mux.com/BuGGTsiXq1T00WUb8qfURrHkTCbhrkfFLSv4uAOZzdhw.m3u8';
+            
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(hlsSource);
+                hls.attachMedia(gamingVideo);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    gamingVideo.play().catch(e => console.log("Auto-play prevented", e));
+                });
+            } else if (gamingVideo.canPlayType('application/vnd.apple.mpegurl')) {
+                // Safari fallback
+                gamingVideo.src = hlsSource;
+                gamingVideo.addEventListener('loadedmetadata', function() {
+                    gamingVideo.play().catch(e => console.log("Auto-play prevented", e));
+                });
+            }
+
+            // 3. Global Fluid 3D Tilt Engine using RequestAnimationFrame
+            const sliderContainer = document.getElementById('main-slider');
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+            let isHovering = false;
+            
+            // Listen to mouse movement over the whole window
+            window.addEventListener('mousemove', (e) => {
+                isHovering = true;
+                // Calculate percentage from center of screen (-1 to 1)
+                mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+            });
+
+            window.addEventListener('mouseleave', () => {
+                isHovering = false;
+            });
+
+            // Animation Loop for smooth interpolations
+            function animateTilt() {
+                // Find the currently active slide's wrapper
+                const activeSlide = document.querySelector('.swiper-slide-active .tilt-wrapper');
+                
+                if (activeSlide) {
+                    if (isHovering) {
+                        // Remove transition for immediate smooth tracking
+                        activeSlide.style.transition = 'none';
+                        
+                        // Ease toward target (smoothing)
+                        targetX += (mouseX - targetX) * 0.1;
+                        targetY += (mouseY - targetY) * 0.1;
+
+                        // Calculate rotations (Max 8 degrees for elegance)
+                        const rotateX = targetY * -8; 
+                        const rotateY = targetX * 8;
+                        
+                        activeSlide.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0px)`;
+                    } else {
+                        // Smoothly return to center when mouse leaves
+                        targetX += (0 - targetX) * 0.1;
+                        targetY += (0 - targetY) * 0.1;
+                        
+                        // Add transition back
+                        activeSlide.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+                        activeSlide.style.transform = `rotateX(0deg) rotateY(0deg) translateZ(0px)`;
+                    }
+                }
+                
+                requestAnimationFrame(animateTilt);
+            }
+            
+            // Start the tilt engine
+            animateTilt();
+
+        });
+    </script>
+</body>
+</html>

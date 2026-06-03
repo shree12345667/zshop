@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | Zshop</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Stripe JS -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <!-- Clean Fonts matching Stripe -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f6f9fc; /* Stripe's official background color */
+            -webkit-font-smoothing: antialiased; 
+            color: #30313d;
+        }
+
+        /* Official Stripe Element Minimal Styling */
+        .StripeElement {
+            box-sizing: border-box;
+            height: 44px;
+            padding: 12px 14px;
+            border: 1px solid #e6ebf1;
+            border-radius: 6px;
+            background-color: white;
+            box-shadow: 0 1px 3px 0 #e6ebf1;
+            transition: box-shadow 150ms ease, border-color 150ms ease;
+        }
+
+        .StripeElement--focus {
+            border-color: #0074d4;
+            box-shadow: 0 1px 3px 0 #e6ebf1, 0 0 0 1px #0074d4;
+        }
+
+        .StripeElement--invalid {
+            border-color: #df1b41;
+            box-shadow: 0 1px 3px 0 #e6ebf1, 0 0 0 1px #df1b41;
+        }
+
+        /* Clean Flat Inputs */
+        .flat-input {
+            height: 44px;
+            padding: 12px 14px;
+            border: 1px solid #e6ebf1;
+            border-radius: 6px;
+            background-color: white;
+            box-shadow: 0 1px 3px 0 #e6ebf1;
+            transition: box-shadow 150ms ease, border-color 150ms ease;
+        }
+        .flat-input:focus {
+            border-color: #0074d4;
+            box-shadow: 0 1px 3px 0 #e6ebf1, 0 0 0 1px #0074d4;
+            outline: none;
+        }
+
+        /* Minimal Spinner */
+        .loader {
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative">
+
+    <!-- MAIN CHECKOUT WRAPPER: Flat, no heavy shadows, solid borders -->
+    <div id="checkout-wrapper" class="w-full max-w-4xl bg-white rounded-xl border border-gray-200 flex flex-col md:flex-row relative hidden opacity-0 transition-opacity duration-300" style="box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);">
+        
+        <!-- LEFT PANEL: Order Summary (Light Gray Stripe Style) -->
+        <div class="w-full md:w-5/12 bg-[#f6f9fc] border-r border-gray-200 p-8 flex flex-col relative">
+            <div>
+                <a href="shop(after login).html" class="inline-flex items-center text-[13px] font-semibold text-gray-500 hover:text-gray-800 transition-colors mb-10">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Return to Shop
+                </a>
+                
+                <h1 class="text-2xl font-semibold text-gray-900 mb-2">Zshop Premium</h1>
+                <p class="text-[14px] text-gray-600 leading-relaxed mb-8">
+                    Complete your payment to finalize your order.
+                </p>
+            </div>
+
+            <div class="mt-8">
+                <p class="text-[13px] font-medium text-gray-500 mb-1">Total Due</p>
+                <h2 class="text-3xl font-semibold text-gray-900 mb-4" id="display-total">...</h2>
+                
+                <div class="h-px bg-gray-200 w-full my-4"></div>
+                
+                <div class="flex justify-between items-center text-[13px]">
+                    <span class="text-gray-500 font-medium">Order Reference</span>
+                    <span class="font-mono text-gray-700 font-semibold" id="display-id">...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Clean Payment Form -->
+        <div class="w-full md:w-7/12 p-8 md:p-10 flex flex-col justify-center">
+            
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">Payment Details</h2>
+            </div>
+
+            <!-- TEST MODE NOTICE (Stripe style) -->
+            <div class="mb-6 bg-[#e8f4fd] border border-[#d3e5f5] p-3 rounded-md flex items-start gap-3">
+                <i class="fa-solid fa-circle-info text-[#0074d4] mt-0.5"></i>
+                <div>
+                    <p class="text-[13px] text-[#005599]">Test Mode. Use card <span class="font-mono font-semibold bg-white px-1 py-0.5 rounded border border-[#d3e5f5]">4242 4242 4242 4242</span>.</p>
+                </div>
+            </div>
+
+            <form id="payment-form" class="w-full">
+                
+                <!-- Email field -->
+                <div class="mb-5">
+                    <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Email</label>
+                    <input type="email" id="receipt-email" placeholder="customer@zshop.com" required class="w-full flat-input text-[14px] text-gray-900">
+                </div>
+
+                <!-- Stripe Element -->
+                <div class="mb-8">
+                    <label class="block text-[13px] font-medium text-gray-700 mb-1.5">Card Information</label>
+                    <div id="card-element"></div>
+                    <div id="card-errors" class="text-[#df1b41] text-[13px] font-medium mt-2 px-1" role="alert"></div>
+                </div>
+
+                <!-- Flat Stripe Blue Button -->
+                <button id="submit-btn" type="submit" class="w-full bg-[#0074d4] hover:bg-[#005db0] text-white text-[15px] font-semibold py-3.5 rounded-md active:scale-[0.99] transition-all flex justify-center items-center gap-2">
+                    <span id="button-text">Pay</span>
+                    <div id="spinner" class="loader hidden"></div>
+                </button>
+                
+                <p class="text-center text-[12px] text-gray-500 font-medium mt-6 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-lock text-gray-400"></i> Payments are secure and encrypted.
+                </p>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- FALLBACK ERROR/SUCCESS UI -->
+    <div id="fallback-ui" class="hidden w-full max-w-md bg-white border border-gray-200 rounded-xl p-10 flex flex-col items-center text-center" style="box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);">
+        <div class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-4">
+            <i class="fa-solid fa-check text-2xl"></i>
+        </div>
+        <h1 class="text-xl font-semibold text-gray-900 mb-2">Order Processed</h1>
+        <p class="text-[14px] text-gray-500 mb-8">There are no pending orders requiring payment at this time.</p>
+        <a href="shop(after login).html" class="w-full text-center bg-[#0074d4] hover:bg-[#005db0] text-white px-6 py-3 rounded-md font-semibold text-[14px] transition-colors mb-3">
+            Continue Shopping
+        </a>
+        <a href="account.html" class="text-[13px] font-medium text-gray-500 hover:text-gray-800">
+            View My Dashboard
+        </a>
+    </div>
+
+    <!-- MAIN CHECKOUT LOGIC -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const checkoutWrapper = document.getElementById('checkout-wrapper');
+            const fallbackUI = document.getElementById('fallback-ui');
+
+            // 1. Session Validation
+            const orderId = sessionStorage.getItem('stripe_pending_id');
+            const orderTotal = sessionStorage.getItem('stripe_pending_total');
+            
+            if(!orderId || !orderTotal) {
+                fallbackUI.classList.remove('hidden');
+                return;
+            }
+
+            // Reveal the checkout UI
+            checkoutWrapper.classList.remove('hidden');
+            setTimeout(() => { checkoutWrapper.classList.remove('opacity-0'); }, 50);
+
+            // Populate Text Elements
+            document.getElementById('display-total').textContent = orderTotal;
+            document.getElementById('display-id').textContent = orderId;
+
+            const token = localStorage.getItem('vanguard_token');
+            if (token) {
+                fetch('http://localhost:3000/api/me', { headers: { 'Authorization': `Bearer ${token}` } })
+                .then(res => res.json())
+                .then(data => { if(data.user) document.getElementById('receipt-email').value = data.user.email; })
+                .catch(e => console.log("Guest checkout"));
+            }
+
+            // 2. Stripe Setup
+            const stripe = Stripe('pk_test_51TdUJ6812isbxieOrJBdLPzEawcnRySDUmlhBXVa3IfTSqZTXhfCdEuVioqSPTo2IQF7JlbdwZh5EMpE2vkKpJhX00e4HnzLwJ');
+            const elements = stripe.elements();
+
+            const cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        color: '#30313d',
+                        fontFamily: '"Inter", sans-serif',
+                        fontSmoothing: 'antialiased',
+                        fontSize: '15px',
+                        '::placeholder': { color: '#aab7c4' }
+                    },
+                    invalid: { color: '#df1b41', iconColor: '#df1b41' }
+                },
+                hidePostalCode: true
+            });
+
+            cardElement.mount('#card-element');
+
+            // Real-time validation errors
+            cardElement.on('change', function(event) {
+                const displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+
+            // 3. Process Payment
+            const form = document.getElementById('payment-form');
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('button-text');
+            const spinner = document.getElementById('spinner');
+
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                const emailInput = document.getElementById('receipt-email').value.trim();
+                const billingDetails = emailInput ? { email: emailInput } : {};
+
+                // UI Loading State
+                btnText.textContent = "Processing...";
+                spinner.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+                document.getElementById('card-errors').textContent = '';
+
+                try {
+                    // Generate Stripe Payment Method (TOKENIZATION)
+                    const {paymentMethod, error} = await stripe.createPaymentMethod({
+                        type: 'card',
+                        card: cardElement,
+                        billing_details: billingDetails
+                    });
+
+                    if (error) {
+                        throw new Error(error.message);
+                    } 
+
+                    // Update the Database Status
+                    let dbSuccess = false;
+                    try {
+                        const response = await fetch(`http://127.0.0.1:5000/api/orders/${orderId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                status: "PAID & PROCESSING",
+                                stripe_payment_id: paymentMethod.id 
+                            })
+                        });
+
+                        if(response.ok) dbSuccess = true;
+                    } catch (dbError) {
+                        console.warn("Python DB unreachable. Proceeding to LocalStorage fallback.");
+                    }
+
+                    // Fallback to update UI if DB isn't running
+                    if (!dbSuccess) {
+                        let userOrders = JSON.parse(localStorage.getItem('vanguard_orders')) || [];
+                        let globalOrders = JSON.parse(localStorage.getItem('zshop_global_orders')) || [];
+                        
+                        userOrders.forEach(o => { if(o.id === orderId) o.status = "PAID & PROCESSING"; });
+                        globalOrders.forEach(o => { if(o.id === orderId) o.status = "PAID & PROCESSING"; });
+                        
+                        localStorage.setItem('vanguard_orders', JSON.stringify(userOrders));
+                        localStorage.setItem('zshop_global_orders', JSON.stringify(globalOrders));
+                    }
+
+                    // Success UI Feedback
+                    submitBtn.classList.replace('bg-[#0074d4]', 'bg-[#00a650]');
+                    submitBtn.classList.replace('hover:bg-[#005db0]', 'hover:bg-[#008c43]');
+                    btnText.textContent = "Payment Successful";
+                    spinner.classList.add('hidden');
+
+                    // WIPE SESSION TO PREVENT "ALREADY PAID" BUG ON NEXT ITEM
+                    sessionStorage.removeItem('stripe_pending_id');
+                    sessionStorage.removeItem('stripe_pending_total');
+
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'account.html';
+                    }, 1500);
+
+                } catch (err) {
+                    document.getElementById('card-errors').textContent = err.message || "An unexpected error occurred.";
+                    btnText.textContent = "Pay";
+                    spinner.classList.add('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Customers</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- High-End Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+        }
+        
+        .font-serif-italic {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 300;
+        }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+        
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item { transition: all 0.4s ease; }
+        .nav-item:hover {
+            background: rgba(0, 0, 0, 0.03);
+            border-left: 1px solid rgba(0, 0, 0, 0.3);
+            padding-left: 1.5rem;
+            color: black;
+        }
+        .nav-item.active {
+            background: rgba(0, 0, 0, 0.05);
+            border-left: 1px solid rgba(0, 0, 0, 0.8);
+            padding-left: 1.5rem;
+            color: black;
+        }
+
+        .customer-card { transition: all 0.4s ease; }
+        .customer-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+        }
+        
+        .role-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .role-admin { background: #fef08a; color: #854d0e; border: 1px solid #fde047; }
+        .role-customer { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    </style>
+</head>
+<body class="text-gray-800 h-screen w-screen overflow-hidden selection:bg-black selection:text-white relative text-xs">
+
+    <!-- Native Video Background -->
+    <video id="bg-video" autoplay loop muted playsinline src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4" class="absolute inset-0 w-full h-full object-cover -z-20"></video>
+    <div class="absolute inset-0 bg-black/10 -z-10"></div>
+
+    <div class="flex h-full w-full p-2 md:p-4 gap-4 relative z-10">
+        
+        <!-- Sidebar -->
+        <aside class="w-16 md:w-56 glass-panel flex flex-col transition-all duration-500 z-20">
+            <div class="h-24 flex items-center justify-center border-b border-black/5">
+                <span class="font-serif-italic text-2xl tracking-[0.1em] text-black hidden md:block">Admin</span>
+                <span class="font-serif-italic text-2xl tracking-widest text-black block md:hidden">A</span>
+            </div>
+            
+            <nav class="flex-1 py-8 flex flex-col gap-1 overflow-y-auto">
+                <a href="Admin-dashboard.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-chart-line w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Dashboard</span>
+                </a>
+                <a href="Admin-products.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-gem w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Products</span>
+                </a>
+                <a href="Admin-orders.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-box w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Orders</span>
+                </a>
+                <!-- Customers Tab is Active -->
+                <a href="Customers-info.html" class="nav-item active w-full flex items-center py-3 px-4 text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-users w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Customers</span>
+                </a>
+                <a href="Analytics.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-chart-pie w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Analytics</span>
+                </a>
+                <a href="discounts.html" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-tag w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Discounts</span>
+                </a>
+            </nav>
+
+            <div class="border-t border-black/5 p-4">
+                <a href="#" class="nav-item w-full flex items-center py-3 px-4 text-gray-800 hover:text-black uppercase tracking-[0.2em] font-extralight">
+                    <i class="fa-solid fa-sliders w-5 text-center text-[10px]"></i>
+                    <span class="ml-4 hidden md:block mt-0.5">Settings</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 glass-panel overflow-y-auto relative p-8 md:p-12">
+            
+            <header class="mb-10 border-b border-black/5 pb-6 flex justify-between items-end">
+                <div>
+                    <p class="text-[9px] uppercase tracking-[0.3em] text-gray-500 mb-2">User Management</p>
+                    <h1 class="font-serif-italic text-3xl md:text-4xl text-black tracking-[0.1em]">Customers</h1>
+                </div>
+                <div class="flex gap-4">
+                    <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-600 bg-white/20 px-4 py-2 rounded-lg border border-white/50">
+                        Total Users: <span id="total-customers-count" class="text-black">0</span>
+                    </span>
+                </div>
+            </header>
+            
+            <!-- Customers Container -->
+            <div id="admin-customers-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
+                <!-- Data populated by JS Omni-Fetch -->
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- OMNI-FETCH LOGIC FOR USERS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            async function renderCustomers() {
+                const container = document.getElementById('admin-customers-container');
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-10">
+                        <p class="text-[10px] uppercase tracking-widest text-gray-500">Syncing all registered and logged-in users...</p>
+                    </div>
+                `;
+
+                // Map to store unique users by email
+                let globalUsersMap = new Map();
+
+                // Helper to cleanly add a user without duplicates
+                const addUserToMap = (email, name, role, id) => {
+                    if (!email || email.trim() === '') return;
+                    const cleanEmail = email.toLowerCase().trim();
+                    if (!globalUsersMap.has(cleanEmail)) {
+                        globalUsersMap.set(cleanEmail, {
+                            email: cleanEmail,
+                            name: name || cleanEmail.split('@')[0],
+                            role: role || 'customer',
+                            id: id || Math.floor(Math.random() * 90000) + 10000
+                        });
+                    }
+                };
+
+                // --- 1. FETCH FROM PYTHON BACKEND ---
+                try {
+                    const pyRes = await fetch('http://127.0.0.1:5000/api/users', { mode: 'cors' });
+                    if (pyRes.ok) {
+                        const data = await pyRes.json();
+                        (data.users || []).forEach(u => addUserToMap(u.email, u.name || u.fullName, u.role, u.id));
+                    }
+                } catch (e) { console.warn("Python DB users fetch failed."); }
+
+                // --- 2. FETCH CURRENT LOGGED-IN USER (NODE.JS) ---
+                try {
+                    const token = localStorage.getItem('vanguard_token');
+                    if (token) {
+                        const meRes = await fetch('http://localhost:3000/api/me', { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (meRes.ok) {
+                            const data = await meRes.json();
+                            if (data.user) addUserToMap(data.user.email, data.user.fullName || data.user.name, data.user.role, data.user._id || data.user.id);
+                        }
+                    }
+                } catch (e) { console.warn("Node API current user fetch failed."); }
+
+                // --- 3. FETCH FROM LOCALSTORAGE ARRAYS (Registration Fallbacks) ---
+                try {
+                    const lsUsers1 = JSON.parse(localStorage.getItem('vanguard_users')) || [];
+                    const lsUsers2 = JSON.parse(localStorage.getItem('users')) || [];
+                    const lsUsers3 = JSON.parse(localStorage.getItem('zshop_users')) || [];
+                    
+                    [...lsUsers1, ...lsUsers2, ...lsUsers3].forEach(u => addUserToMap(u.email, u.fullName || u.name, u.role, u.id));
+                    
+                    const lsCurrentUser = JSON.parse(localStorage.getItem('vanguard_user'));
+                    if (lsCurrentUser) addUserToMap(lsCurrentUser.email, lsCurrentUser.fullName || lsCurrentUser.name, lsCurrentUser.role, lsCurrentUser.id);
+                } catch (e) { console.warn("LocalStorage users fetch failed."); }
+
+                // --- 4. FETCH ORDERS (Anyone who ordered is a customer) ---
+                let globalOrders = [];
+                try {
+                    const ordRes = await fetch('http://127.0.0.1:5000/api/orders', { mode: 'cors' });
+                    if (ordRes.ok) {
+                        globalOrders = (await ordRes.json()).orders || [];
+                    } else {
+                        globalOrders = JSON.parse(localStorage.getItem('zshop_global_orders')) || [];
+                    }
+                } catch (e) {
+                    globalOrders = JSON.parse(localStorage.getItem('zshop_global_orders')) || [];
+                }
+
+                // Add anyone who placed an order to the users map
+                globalOrders.forEach(order => {
+                    if (order.email) {
+                        addUserToMap(order.email, order.customer, 'customer', null);
+                    }
+                });
+
+                // Convert Map back to an array to render
+                const finalUsers = Array.from(globalUsersMap.values());
+
+                // Update UI Counters
+                document.getElementById('total-customers-count').innerText = finalUsers.length;
+                container.innerHTML = '';
+
+                // Empty State if absolutely nobody is registered
+                if (finalUsers.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full flex flex-col items-center justify-center py-32 border border-dashed border-black/10 bg-white/10 rounded-2xl">
+                            <i class="fa-solid fa-users-slash text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-[12px] uppercase tracking-[0.3em] text-gray-600 font-bold mb-2">No Registered Users</p>
+                            <p class="text-[10px] tracking-widest text-gray-500">When users sign up or log in, they will appear here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Render each user card
+                finalUsers.forEach((user) => {
+                    
+                    // Cross-reference: Calculate Orders for this specific user based on matching email
+                    const userOrders = globalOrders.filter(order => order.email.toLowerCase().trim() === user.email);
+                    const orderCount = userOrders.length;
+                    
+                    // Calculate total money spent by this user
+                    let totalSpent = 0;
+                    userOrders.forEach(order => {
+                        if(order.status === "PAID & PROCESSING" || order.status === "SHIPPED") {
+                            const amount = parseFloat(order.total.replace('$', '').replace(/,/g, ''));
+                            if(!isNaN(amount)) totalSpent += amount;
+                        }
+                    });
+
+                    const roleBadgeClass = user.role === "admin" ? "role-admin" : "role-customer";
+                    const userInitial = (user.name || user.email).charAt(0).toUpperCase();
+
+                    const userCard = `
+                        <div class="customer-card glass-panel bg-white/20 p-6 rounded-2xl border border-white/60 flex flex-col h-full">
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-[14px]">
+                                        ${userInitial}
+                                    </div>
+                                    <div>
+                                        <p class="text-[13px] font-bold text-black truncate w-32 md:w-40" title="${user.name}">${user.name}</p>
+                                        <p class="text-[9px] uppercase tracking-widest text-gray-500 mt-1" title="${user.email}">${user.email}</p>
+                                    </div>
+                                </div>
+                                <span class="role-badge ${roleBadgeClass}">${user.role}</span>
+                            </div>
+
+                            <div class="mt-auto bg-white/40 p-4 rounded-xl border border-white/50">
+                                <div class="flex justify-between items-center mb-2 border-b border-black/5 pb-2">
+                                    <span class="text-[10px] uppercase tracking-widest text-gray-600 font-bold">Total Orders</span>
+                                    <span class="text-[12px] font-bold text-black">${orderCount}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] uppercase tracking-widest text-gray-600 font-bold">Total Spent</span>
+                                    <span class="text-[14px] font-bold text-[#D4AF37]">$${totalSpent.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += userCard;
+                });
+            }
+
+            // Fire the function on load
+            renderCustomers();
+        });
+    </script>
+</body>
+</html>
