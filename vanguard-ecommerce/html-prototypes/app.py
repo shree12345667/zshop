@@ -15,7 +15,12 @@ CORS(app)
 # Register the separated scripts with the correct /api prefix
 app.register_blueprint(products_bp, url_prefix='/api')
 app.register_blueprint(orders_bp, url_prefix='/api')
-app.register_blueprint(customers_bp, url_prefix='/api') # <-- Customers linked here!
+app.register_blueprint(customers_bp, url_prefix='/api') 
+
+# Force the database to build immediately outside the main block so Railway sees it
+if not os.path.exists(DATABASE):
+    print("Database missing. Initializing new schema...")
+    init_db(app)
 
 # --- AUTH ROUTES ---
 @app.route('/api/login', methods=['POST'])
@@ -52,19 +57,15 @@ def register():
 @app.route('/api/analytics', methods=['GET'])
 def get_analytics():
     """Future endpoint for Analytics.html"""
-    # We will build out this logic when we do the Analytics dashboard
     return jsonify({"success": True, "message": "Analytics endpoint active and waiting for data."})
 
 @app.route('/api/discounts', methods=['GET'])
 def get_discounts():
     """Future endpoint for discounts.html"""
-    # We will build out this logic when we do the Discounts dashboard
     return jsonify({"success": True, "message": "Discounts endpoint active and waiting for data."})
 
-
+# --- RAILWAY UNLOCK (0.0.0.0 binds it to the public internet) ---
 if __name__ == '__main__':
-    if not os.path.exists(DATABASE):
-        print("Database missing. Initializing new schema...")
-    init_db(app)
-    print("Modular Backend running on zshop-production-5704.up.railway.app")
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    print(f"Starting server on port {port}...")
+    app.run(host="0.0.0.0", port=port, debug=False)
