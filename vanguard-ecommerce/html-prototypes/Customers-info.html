@@ -182,7 +182,7 @@
 
                 // --- 1. FETCH FROM PYTHON BACKEND ---
                 try {
-                    const pyRes = await fetch('http://127.0.0.1:5000/api/users', { mode: 'cors' });
+                    const pyRes = await fetch('zshop-production-5704.up.railway.app/api/users', { mode: 'cors' });
                     if (pyRes.ok) {
                         const data = await pyRes.json();
                         (data.users || []).forEach(u => addUserToMap(u.email, u.name || u.fullName, u.role, u.id));
@@ -216,7 +216,7 @@
                 // --- 4. FETCH ORDERS (Anyone who ordered is a customer) ---
                 let globalOrders = [];
                 try {
-                    const ordRes = await fetch('http://127.0.0.1:5000/api/orders', { mode: 'cors' });
+                    const ordRes = await fetch('zshop-production-5704.up.railway.app/api/orders', { mode: 'cors' });
                     if (ordRes.ok) {
                         globalOrders = (await ordRes.json()).orders || [];
                     } else {

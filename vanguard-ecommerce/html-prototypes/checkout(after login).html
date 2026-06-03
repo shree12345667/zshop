@@ -239,7 +239,7 @@
 
                 try {
                     // 1. Ask Python Backend to create a PaymentIntent
-                    const intentRes = await fetch('http://127.0.0.1:5000/api/create-payment-intent', {
+                    const intentRes = await fetch('zshop-production-5704.up.railway.app/api/create-payment-intent', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ amount: orderTotal })
@@ -267,7 +267,7 @@
                         // Update the Database Status
                         let dbSuccess = false;
                         try {
-                            const response = await fetch(`http://127.0.0.1:5000/api/orders/${orderId}`, {
+                            const response = await fetch(`zshop-production-5704.up.railway.app/api/orders/${orderId}`, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ 

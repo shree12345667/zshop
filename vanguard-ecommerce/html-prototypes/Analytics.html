@@ -221,7 +221,7 @@
 
             try {
                 // Fetch Orders
-                const ordRes = await fetch('http://127.0.0.1:5000/api/orders', { mode: 'cors' });
+                const ordRes = await fetch('zshop-production-5704.up.railway.app/api/orders', { mode: 'cors' });
                 if(ordRes.ok) {
                     const data = await ordRes.json();
                     globalOrders = data.orders || [];
@@ -230,7 +230,7 @@
                 }
 
                 // Fetch Products
-                const prodRes = await fetch('http://127.0.0.1:5000/api/products', { mode: 'cors' });
+                const prodRes = await fetch('zshop-production-5704.up.railway.app/api/products', { mode: 'cors' });
                 if(prodRes.ok) {
                     const data = await prodRes.json();
                     globalProducts = data.products ? data.products : (Array.isArray(data) ? data : []);
@@ -239,7 +239,7 @@
                 }
 
                 // Fetch Users
-                const userRes = await fetch('http://127.0.0.1:5000/api/users', { mode: 'cors' });
+                const userRes = await fetch('zshop-production-5704.up.railway.app/api/users', { mode: 'cors' });
                 if(userRes.ok) {
                     const data = await userRes.json();
                     globalUsers = data.users || [];

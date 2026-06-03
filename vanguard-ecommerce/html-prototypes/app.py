@@ -66,5 +66,5 @@ if __name__ == '__main__':
     if not os.path.exists(DATABASE):
         print("Database missing. Initializing new schema...")
     init_db(app)
-    print("Modular Backend running on http://127.0.0.1:5000")
+    print("Modular Backend running on zshop-production-5704.up.railway.app")
     app.run(debug=True, port=5000)

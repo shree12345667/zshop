@@ -411,7 +411,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             
             // --- STRICTLY BACKEND API INTEGRATION ---
-            const API_URL = 'http://127.0.0.1:5000/api/products';
+            const API_URL = 'zshop-production-5704.up.railway.app/api/products';
             const productGrid = document.getElementById('product-grid');
             const productCountEl = document.getElementById('product-count');
 
@@ -438,7 +438,7 @@
                         <div class="col-span-full flex flex-col items-center justify-center py-16 text-center border border-dashed border-white/20 rounded-2xl">
                             <i class="text-red-400 text-4xl mb-4">⚠</i>
                             <p class="text-white font-medium text-lg mb-2">Server Connection Failed</p>
-                            <p class="text-gray-400 text-sm max-w-md">Cannot reach the database at http://127.0.0.1:5000.</p>
+                            <p class="text-gray-400 text-sm max-w-md">Cannot reach the database at zshop-production-5704.up.railway.app.</p>
                         </div>
                     `;
                 }

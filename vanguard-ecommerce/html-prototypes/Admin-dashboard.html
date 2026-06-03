@@ -190,7 +190,7 @@
             
             // 1. Fetch Real Products Count from Python Backend
             try {
-                const res = await fetch('http://127.0.0.1:5000/api/products');
+                const res = await fetch('zshop-production-5704.up.railway.app/api/products');
                 const data = await res.json();
                 
                 const productsArray = data.products ? data.products : (Array.isArray(data) ? data : []);
@@ -202,7 +202,7 @@
 
             // 2. Fetch Orders for Order Count, Revenue, and Recent Activity Feed
             try {
-                const resOrders = await fetch('http://127.0.0.1:5000/api/orders');
+                const resOrders = await fetch('zshop-production-5704.up.railway.app/api/orders');
                 const dataOrders = await resOrders.json();
                 const globalOrders = dataOrders.orders || [];
                 

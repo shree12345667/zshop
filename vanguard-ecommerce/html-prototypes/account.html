@@ -421,7 +421,7 @@
 
                 try {
                     // Fetch ALL global orders from the Python backend
-                    const response = await fetch('http://127.0.0.1:5000/api/orders', { mode: 'cors' });
+                    const response = await fetch('zshop-production-5704.up.railway.app/api/orders', { mode: 'cors' });
                     if(!response.ok) throw new Error("Failed to fetch database");
                     
                     const data = await response.json();
@@ -615,7 +615,7 @@
 
 
             // --- 6. DUAL-SYNC DYNAMIC FAVORITES LOGIC ---
-            const API_URL = 'http://127.0.0.1:5000/api/products';
+            const API_URL = 'zshop-production-5704.up.railway.app/api/products';
             let fullCatalog = [];
             let favorites = JSON.parse(localStorage.getItem('zshop_favorites')) || []; 
 

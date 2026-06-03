@@ -260,7 +260,7 @@
                     // Update the Database Status
                     let dbSuccess = false;
                     try {
-                        const response = await fetch(`http://127.0.0.1:5000/api/orders/${orderId}`, {
+                        const response = await fetch(`zshop-production-5704.up.railway.app/api/orders/${orderId}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
