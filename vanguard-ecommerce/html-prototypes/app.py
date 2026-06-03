@@ -12,10 +12,10 @@ from customers import customers_bp
 app = Flask(__name__)
 CORS(app) 
 
-# Register the separated scripts
-app.register_blueprint(products_bp)
-app.register_blueprint(orders_bp)
-app.register_blueprint(customers_bp) # <-- Customers linked here!
+# Register the separated scripts with the correct /api prefix
+app.register_blueprint(products_bp, url_prefix='/api')
+app.register_blueprint(orders_bp, url_prefix='/api')
+app.register_blueprint(customers_bp, url_prefix='/api') # <-- Customers linked here!
 
 # --- AUTH ROUTES ---
 @app.route('/api/login', methods=['POST'])
